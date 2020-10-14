@@ -1,8 +1,11 @@
 package client
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/samsarahq/go/oops"
 )
 
 // BaseURLV1 is the base url defined here: https://www.dnd5eapi.co/docs/#base.
@@ -22,4 +25,23 @@ func NewClient() *Client {
 			Timeout: time.Minute,
 		},
 	}
+}
+
+func (c *Client) sendRequest(req *http.Request, v interface{}) error {
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return oops.Wrapf(err, "unable to make request")
+	}
+	defer res.Body.Close()
+
+	// TODO: better status code handling.
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
+		return oops.Errorf("response error, status code: %d", res.StatusCode)
+	}
+
+	if err = json.NewDecoder(res.Body).Decode(&v); err != nil {
+		return oops.Wrapf(err, "unable to decode response bodybody")
+	}
+
+	return nil
 }
