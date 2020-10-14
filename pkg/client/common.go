@@ -6,11 +6,14 @@ type ResourceList struct {
 	Resources []APIReference `json:"results"`
 }
 
+// ResourceURL is a type alias for a string for readability purposes.
+type ResourceURL string
+
 // APIReference is the basic data about an API resource.
 type APIReference struct {
-	Index string `json:"index"`
-	Name  string `json:"name"`
-	URL   string `json:"url"`
+	Index string      `json:"index"`
+	Name  string      `json:"name"`
+	URL   ResourceURL `json:"url"`
 }
 
 // Choice represents a selection from a list of resources.

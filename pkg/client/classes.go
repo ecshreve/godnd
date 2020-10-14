@@ -15,11 +15,11 @@ type Class struct {
 	ProficiencyChoices []Choice       `json:"proficiency_choices"`
 	Proficiencies      []APIReference `json:"proficiencies"`
 	SavingThrows       []APIReference `json:"saving_throws"`
-	StartingEquipment  string         `json:"starting_equipment"`
-	ClassLevels        string         `json:"class_levels"`
+	StartingEquipment  ResourceURL    `json:"starting_equipment"`
+	ClassLevels        ResourceURL    `json:"class_levels"`
 	SubClasses         []APIReference `json:"subclasses"`
-	SpellCasting       string         `json:"spellcasting"`
-	Spells             string         `json:"spells"`
+	SpellCasting       ResourceURL    `json:"spellcasting"`
+	Spells             ResourceURL    `json:"spells"`
 }
 
 // GetClasses returns the ResourceList for the /classes endpoint.

@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"context"
+
+	"github.com/davecgh/go-spew/spew"
+	"github.com/ecshreve/godnd/pkg/client"
+)
 
 func main() {
-	fmt.Println("hello world")
+	ctx := context.Background()
+	scs := spew.ConfigState{Indent: "\t"}
+
+	c := client.NewClient()
+	res, _ := c.GetClassByIndex(ctx, "sorcerer")
+	scs.Dump(res)
 }

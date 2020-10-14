@@ -3,6 +3,7 @@ module github.com/ecshreve/godnd
 go 1.14
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/kr/pretty v0.2.1
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/likexian/gokit v0.23.3
