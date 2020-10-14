@@ -12,3 +12,10 @@ type APIReference struct {
 	Name  string `json:"name"`
 	URL   string `json:"url"`
 }
+
+// Choice represents a selection from a list of resources.
+type Choice struct {
+	Choose int            `json:"choose"`
+	Type   string         `json:"type"`
+	From   []APIReference `json:"from"`
+}
