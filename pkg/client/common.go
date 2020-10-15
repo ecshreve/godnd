@@ -8,7 +8,7 @@ import (
 	"github.com/samsarahq/go/oops"
 )
 
-const BaseURL = "https://www.dnd5eapi.co"
+type Object interface{}
 
 // ResourceList is a list of APIReferences for an endpoint.
 type ResourceList struct {
@@ -33,6 +33,7 @@ type Choice struct {
 	From   []APIReference `json:"from"`
 }
 
+// GetResourceList returns the ResourceList for the given endpoint.
 func (c *Client) GetResourceList(ctx context.Context, endpoint string) (*ResourceList, error) {
 	resURL := ResourceURL(fmt.Sprintf("/api/%s", endpoint))
 
@@ -44,23 +45,26 @@ func (c *Client) GetResourceList(ctx context.Context, endpoint string) (*Resourc
 	return res, nil
 }
 
-func (c *Client) GetResource(ctx context.Context, resURL ResourceURL, v interface{}) error {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", BaseURL, resURL), nil)
+// GetResource makes a request to the given resURL and unmarshals the response
+// into the given object.
+func (c *Client) GetResource(ctx context.Context, resURL ResourceURL, o Object) error {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", c.getRawBaseURL(), resURL), nil)
 	if err != nil {
 		return oops.Wrapf(err, "unable to build request for resource url: %s", resURL)
 	}
 
 	req = req.WithContext(ctx)
 
-	if err := c.sendRequest(req, &v); err != nil {
+	if err := c.sendRequest(req, &o); err != nil {
 		return oops.Wrapf(err, "unable to get resource for request: %+v", req)
 	}
 
 	return nil
 }
 
-func (c *Client) GetResourceForAPIReference(ctx context.Context, ref APIReference, v interface{}) error {
-	if err := c.GetResource(ctx, ref.URL, v); err != nil {
+// GetResourceForAPIReference is a convenience wrapper around GetResource.
+func (c *Client) GetResourceForAPIReference(ctx context.Context, ref APIReference, o Object) error {
+	if err := c.GetResource(ctx, ref.URL, o); err != nil {
 		return oops.Wrapf(err, "unable to get resource for api reference: %v", ref)
 	}
 
