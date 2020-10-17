@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	genny.DoIt()
+	parser := genny.Parser{}
+	parser.ParseGqlSchema()
 }

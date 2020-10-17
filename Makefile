@@ -7,13 +7,16 @@ mod-tidy:
 build:
 	go build -o bin/godnd github.com/ecshreve/godnd/cmd/godnd
 
+clean:
+	rm pkg/genny/generated_types.go
+
 install:
 	go install -i github.com/ecshreve/godnd/cmd/godnd
 
 run-only:
 	bin/godnd
 
-run: build run-only
+run: clean build run-only
 
 test:
 	go test github.com/ecshreve/godnd/...

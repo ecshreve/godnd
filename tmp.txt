@@ -1,0 +1,1135 @@
+go build -o bin/godnd github.com/ecshreve/godnd/cmd/godnd
+bin/godnd
+[type AbilityScore struct {
+	Desc []string
+	FullName string
+	Index string
+	Name string
+	Skills []AbilityScoreSkill
+	Url string
+}
+ type AbilityScoreSkill struct {
+	Index string
+	Name string
+	Url string
+}
+ type Class struct {
+	ClassLevels string
+	HitDie int32
+	Index string
+	Name string
+	Proficiencies []ClassProficiency
+	ProficiencyChoices []ClassProficiency_choice
+	SavingThrows []ClassSaving_throw
+	Spellcasting string
+	Spells string
+	StartingEquipment string
+	Subclasses []ClassSubclass
+	Url string
+}
+ type ClassProficiency struct {
+	Index string
+	Name string
+	Url string
+}
+ type ClassProficiency_choice struct {
+	Choose int32
+	From []ClassProficiency_choiceFrom
+	Type string
+}
+ type ClassProficiency_choiceFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type ClassSaving_throw struct {
+	Index string
+	Name string
+	Url string
+}
+ type ClassSubclass struct {
+	Index string
+	Name string
+	Url string
+}
+ type Condition struct {
+	Desc []string
+	Index string
+	Name string
+	Url string
+}
+ type DamageType struct {
+	Desc []string
+	Index string
+	Name string
+	Url string
+}
+ type DeleteManyPayload struct {
+	DeletedCount int32!
+}
+ type Equipment struct {
+	HDamage EquipmentH_damage
+	ArmorCategory string
+	ArmorClass EquipmentArmor_class
+	Capacity string
+	CategoryRange string
+	Contents []EquipmentContent
+	Cost EquipmentCost
+	Damage EquipmentDamage
+	Desc []string
+	EquipmentCategory EquipmentEquipment_category
+	GearCategory EquipmentGear_category
+	Index string
+	Name string
+	Properties []EquipmentProperty
+	Quantity int32
+	Range EquipmentRange
+	Special []string
+	Speed EquipmentSpeed
+	StealthDisadvantage boolean
+	StrMinimum int32
+	ThrowRange EquipmentThrow_range
+	ToolCategory string
+	Url string
+	VehicleCategory string
+	WeaponCategory string
+	WeaponRange string
+	Weight int32
+}
+ type EquipmentArmor_class struct {
+	Base int32
+	DexBonus boolean
+	MaxBonus int32
+}
+ type EquipmentCategory struct {
+	Equipment []EquipmentCategoryEquipment
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentCategoryEquipment struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentContent struct {
+	Item EquipmentContentItem
+	Quantity int32
+}
+ type EquipmentContentItem struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentCost struct {
+	Quantity int32
+	Unit string
+}
+ type EquipmentDamage struct {
+	DamageDice string
+	DamageType EquipmentDamageDamage_type
+}
+ type EquipmentDamageDamage_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentEquipment_category struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentGear_category struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentH_damage struct {
+	DamageDice string
+	DamageType EquipmentH_damageDamage_type
+}
+ type EquipmentH_damageDamage_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentProperty struct {
+	Index string
+	Name string
+	Url string
+}
+ type EquipmentRange struct {
+	Long int32
+	Normal int32
+}
+ type EquipmentSpeed struct {
+	Quantity int32
+	Unit string
+}
+ type EquipmentThrow_range struct {
+	Long int32
+	Normal int32
+}
+ type Feature struct {
+	Choice FeatureChoice
+	Class FeatureClass
+	Desc []string
+	Group string
+	Index string
+	Level int32
+	Name string
+	Prerequisites []FeaturePrerequisite
+	Reference string
+	Subclass FeatureSubclass
+	Url string
+}
+ type FeatureChoice struct {
+	Choose int32
+	From []FeatureChoiceFrom
+	Type string
+}
+ type FeatureChoiceFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type FeatureClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type FeaturePrerequisite struct {
+	Feature string
+	Level int32
+	Type string
+}
+ type FeatureSubclass struct {
+	Index string
+	Name string
+	Url string
+}
+ type InsertManyPayload struct {
+	InsertedIds []ObjectId!
+}
+ type Language struct {
+	Desc string
+	Index string
+	Name string
+	Script string
+	Type string
+	TypicalSpeakers []string
+	Url string
+}
+ type Level struct {
+	AbilityScoreBonuses int32
+	Class LevelClass
+	ClassSpecific LevelClass_specific
+	FeatureChoices []LevelFeature_choice
+	Features []LevelFeature
+	Index string
+	Level int32
+	ProfBonus int32
+	Spellcasting LevelSpellcasting
+	Subclass LevelSubclass
+	SubclassSpecific LevelSubclass_specific
+	Url string
+}
+ type LevelClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type LevelClass_specific struct {
+	ActionSurges int32
+	ArcaneRecoveryLevels int32
+	AuraRange int32
+	BardicInspirationDie int32
+	BrutalCriticalDice int32
+	ChannelDivinityCharges int32
+	CreatingSpellSlots []LevelClass_specificCreating_spell_slot
+	DestroyUndeadCr int32
+	ExtraAttacks int32
+	FavoredEnemies int32
+	FavoredTerrain int32
+	IndomitableUses int32
+	InvocationsKnown int32
+	KiPoints int32
+	MagicalSecretsMax5 int32
+	MagicalSecretsMax7 int32
+	MagicalSecretsMax9 int32
+	MartialArts LevelClass_specificMartial_art
+	MetamagicKnown int32
+	MysticArcanumLevel6 int32
+	MysticArcanumLevel7 int32
+	MysticArcanumLevel8 int32
+	MysticArcanumLevel9 int32
+	RageCount int32
+	RageDamageBonus int32
+	SneakAttack LevelClass_specificSneak_attack
+	SongOfRestDie int32
+	SorceryPoints int32
+	UnarmoredMovement int32
+	WildShapeFly boolean
+	WildShapeMaxCr int32
+	WildShapeSwim boolean
+}
+ type LevelClass_specificCreating_spell_slot struct {
+	SorceryPointCost int32
+	SpellSlotLevel int32
+}
+ type LevelClass_specificMartial_art struct {
+	DiceCount int32
+	DiceValue int32
+}
+ type LevelClass_specificSneak_attack struct {
+	DiceCount int32
+	DiceValue int32
+}
+ type LevelFeature struct {
+	Index string
+	Name string
+	Url string
+}
+ type LevelFeature_choice struct {
+	Index string
+	Name string
+	Url string
+}
+ type LevelSpellcasting struct {
+	CantripsKnown int32
+	SpellSlotsLevel1 int32
+	SpellSlotsLevel2 int32
+	SpellSlotsLevel3 int32
+	SpellSlotsLevel4 int32
+	SpellSlotsLevel5 int32
+	SpellSlotsLevel6 int32
+	SpellSlotsLevel7 int32
+	SpellSlotsLevel8 int32
+	SpellSlotsLevel9 int32
+	SpellsKnown int32
+}
+ type LevelSubclass struct {
+	Index string
+	Name string
+	Url string
+}
+ type LevelSubclass_specific struct {
+	AdditionalMagicalSecretsMaxLvl int32
+	AuraRange int32
+}
+ type MagicItem struct {
+	Desc []string
+	EquipmentCategory MagicItemEquipment_category
+	Index string
+	Name string
+	Url string
+}
+ type MagicItemEquipment_category struct {
+	Index string
+	Name string
+	Url string
+}
+ type MagicSchool struct {
+	Desc string
+	Index string
+	Name string
+	Url string
+}
+ type Monster struct {
+	Actions []MonsterAction
+	Alignment string
+	ArmorClass int32
+	ChallengeRating int32
+	Charisma int32
+	ConditionImmunities []MonsterCondition_immunity
+	Constitution int32
+	DamageImmunities []string
+	DamageResistances []string
+	DamageVulnerabilities []string
+	Dexterity int32
+	HitDice string
+	HitPoints int32
+	Index string
+	Intelligence int32
+	Languages string
+	LegendaryActions []MonsterLegendary_action
+	Name string
+	OtherSpeeds []MonsterOther_speed
+	Proficiencies []MonsterProficiency
+	Reactions []MonsterReaction
+	Senses MonsterSense
+	Size string
+	SpecialAbilities []MonsterSpecial_ability
+	Speed MonsterSpeed
+	Strength int32
+	Subtype string
+	Type string
+	Url string
+	Wisdom int32
+}
+ type MonsterAction struct {
+	AttackBonus int32
+	AttackOptions MonsterActionAttack_option
+	Damage []MonsterActionDamage
+	Desc string
+	Name string
+	Options MonsterActionOption
+	Usage MonsterActionUsage
+}
+ type MonsterActionAttack_option struct {
+	Choose int32
+	From []MonsterActionAttack_optionFrom
+	Type string
+}
+ type MonsterActionAttack_optionFrom struct {
+	Damage []MonsterActionAttack_optionFromDamage
+	Dc MonsterActionAttack_optionFromDc
+	Name string
+}
+ type MonsterActionAttack_optionFromDamage struct {
+	DamageDice string
+	DamageType MonsterActionAttack_optionFromDamageDamage_type
+}
+ type MonsterActionAttack_optionFromDamageDamage_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type MonsterActionAttack_optionFromDc struct {
+	DcType MonsterActionAttack_optionFromDcDc_type
+	DcValue int32
+	SuccessType string
+}
+ type MonsterActionAttack_optionFromDcDc_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type MonsterActionDamage struct {
+	DamageDice string
+	DamageType MonsterActionDamageDamage_type
+}
+ type MonsterActionDamageDamage_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type MonsterActionOption struct {
+	Choose int32
+}
+ type MonsterActionUsage struct {
+	Dice string
+	MinValue int32
+	Type string
+}
+ type MonsterCondition_immunity struct {
+	Index string
+	Name string
+	Url string
+}
+ type MonsterLegendary_action struct {
+	Desc string
+	Name string
+}
+ type MonsterOther_speed struct {
+	Form string
+	Speed MonsterOther_speedSpeed
+}
+ type MonsterOther_speedSpeed struct {
+	Climb string
+	Walk string
+}
+ type MonsterProficiency struct {
+	Proficiency MonsterProficiencyProficiency
+	Value int32
+}
+ type MonsterProficiencyProficiency struct {
+	Index string
+	Name string
+	Url string
+}
+ type MonsterReaction struct {
+	Desc string
+	Name string
+}
+ type MonsterSense struct {
+	Blindsight string
+	Darkvision string
+	PassivePerception int32
+	Tremorsense string
+	Truesight string
+}
+ type MonsterSpecial_ability struct {
+	Desc string
+	Name string
+}
+ type MonsterSpeed struct {
+	Burrow string
+	Climb string
+	Fly string
+	Hover boolean
+	Swim string
+	Walk string
+}
+ type Mutation struct {
+	deleteManyAbilityScores(Query AbilityScoreQueryInput): DeleteManyPayload
+	deleteManyClasses(Query ClassQueryInput): DeleteManyPayload
+	deleteManyConditions(Query ConditionQueryInput): DeleteManyPayload
+	deleteManyDamageTypes(Query DamageTypeQueryInput): DeleteManyPayload
+	deleteManyEquipmentCategories(Query EquipmentCategoryQueryInput): DeleteManyPayload
+	deleteManyEquipments(Query EquipmentQueryInput): DeleteManyPayload
+	deleteManyFeatures(Query FeatureQueryInput): DeleteManyPayload
+	deleteManyLanguages(Query LanguageQueryInput): DeleteManyPayload
+	deleteManyLevels(Query LevelQueryInput): DeleteManyPayload
+	deleteManyMagicItems(Query MagicItemQueryInput): DeleteManyPayload
+	deleteManyMagicSchools(Query MagicSchoolQueryInput): DeleteManyPayload
+	deleteManyMonsters(Query MonsterQueryInput): DeleteManyPayload
+	deleteManyProficiencies(Query ProficiencyQueryInput): DeleteManyPayload
+	deleteManyRaces(Query RaceQueryInput): DeleteManyPayload
+	deleteManyRuleSections(Query RuleSectionQueryInput): DeleteManyPayload
+	deleteManyRules(Query RuleQueryInput): DeleteManyPayload
+	deleteManySkills(Query SkillQueryInput): DeleteManyPayload
+	deleteManySpellcastings(Query SpellcastingQueryInput): DeleteManyPayload
+	deleteManySpells(Query SpellQueryInput): DeleteManyPayload
+	deleteManyStartingequipments(Query StartingequipmentQueryInput): DeleteManyPayload
+	deleteManySubclasses(Query SubclassQueryInput): DeleteManyPayload
+	deleteManySubraces(Query SubraceQueryInput): DeleteManyPayload
+	deleteManyTraits(Query TraitQueryInput): DeleteManyPayload
+	deleteManyWeaponProperties(Query WeaponPropertyQueryInput): DeleteManyPayload
+	deleteOneAbilityScore(Query AbilityScoreQueryInput!): AbilityScore
+	deleteOneClass(Query ClassQueryInput!): Class
+	deleteOneCondition(Query ConditionQueryInput!): Condition
+	deleteOneDamageType(Query DamageTypeQueryInput!): DamageType
+	deleteOneEquipment(Query EquipmentQueryInput!): Equipment
+	deleteOneEquipmentCategory(Query EquipmentCategoryQueryInput!): EquipmentCategory
+	deleteOneFeature(Query FeatureQueryInput!): Feature
+	deleteOneLanguage(Query LanguageQueryInput!): Language
+	deleteOneLevel(Query LevelQueryInput!): Level
+	deleteOneMagicItem(Query MagicItemQueryInput!): MagicItem
+	deleteOneMagicSchool(Query MagicSchoolQueryInput!): MagicSchool
+	deleteOneMonster(Query MonsterQueryInput!): Monster
+	deleteOneProficiency(Query ProficiencyQueryInput!): Proficiency
+	deleteOneRace(Query RaceQueryInput!): Race
+	deleteOneRule(Query RuleQueryInput!): Rule
+	deleteOneRuleSection(Query RuleSectionQueryInput!): RuleSection
+	deleteOneSkill(Query SkillQueryInput!): Skill
+	deleteOneSpell(Query SpellQueryInput!): Spell
+	deleteOneSpellcasting(Query SpellcastingQueryInput!): Spellcasting
+	deleteOneStartingequipment(Query StartingequipmentQueryInput!): Startingequipment
+	deleteOneSubclass(Query SubclassQueryInput!): Subclass
+	deleteOneSubrace(Query SubraceQueryInput!): Subrace
+	deleteOneTrait(Query TraitQueryInput!): Trait
+	deleteOneWeaponProperty(Query WeaponPropertyQueryInput!): WeaponProperty
+	insertManyAbilityScores(Data []AbilityScoreInsertInput!!): InsertManyPayload
+	insertManyClasses(Data []ClassInsertInput!!): InsertManyPayload
+	insertManyConditions(Data []ConditionInsertInput!!): InsertManyPayload
+	insertManyDamageTypes(Data []DamageTypeInsertInput!!): InsertManyPayload
+	insertManyEquipmentCategories(Data []EquipmentCategoryInsertInput!!): InsertManyPayload
+	insertManyEquipments(Data []EquipmentInsertInput!!): InsertManyPayload
+	insertManyFeatures(Data []FeatureInsertInput!!): InsertManyPayload
+	insertManyLanguages(Data []LanguageInsertInput!!): InsertManyPayload
+	insertManyLevels(Data []LevelInsertInput!!): InsertManyPayload
+	insertManyMagicItems(Data []MagicItemInsertInput!!): InsertManyPayload
+	insertManyMagicSchools(Data []MagicSchoolInsertInput!!): InsertManyPayload
+	insertManyMonsters(Data []MonsterInsertInput!!): InsertManyPayload
+	insertManyProficiencies(Data []ProficiencyInsertInput!!): InsertManyPayload
+	insertManyRaces(Data []RaceInsertInput!!): InsertManyPayload
+	insertManyRuleSections(Data []RuleSectionInsertInput!!): InsertManyPayload
+	insertManyRules(Data []RuleInsertInput!!): InsertManyPayload
+	insertManySkills(Data []SkillInsertInput!!): InsertManyPayload
+	insertManySpellcastings(Data []SpellcastingInsertInput!!): InsertManyPayload
+	insertManySpells(Data []SpellInsertInput!!): InsertManyPayload
+	insertManyStartingequipments(Data []StartingequipmentInsertInput!!): InsertManyPayload
+	insertManySubclasses(Data []SubclassInsertInput!!): InsertManyPayload
+	insertManySubraces(Data []SubraceInsertInput!!): InsertManyPayload
+	insertManyTraits(Data []TraitInsertInput!!): InsertManyPayload
+	insertManyWeaponProperties(Data []WeaponPropertyInsertInput!!): InsertManyPayload
+	insertOneAbilityScore(Data AbilityScoreInsertInput!): AbilityScore
+	insertOneClass(Data ClassInsertInput!): Class
+	insertOneCondition(Data ConditionInsertInput!): Condition
+	insertOneDamageType(Data DamageTypeInsertInput!): DamageType
+	insertOneEquipment(Data EquipmentInsertInput!): Equipment
+	insertOneEquipmentCategory(Data EquipmentCategoryInsertInput!): EquipmentCategory
+	insertOneFeature(Data FeatureInsertInput!): Feature
+	insertOneLanguage(Data LanguageInsertInput!): Language
+	insertOneLevel(Data LevelInsertInput!): Level
+	insertOneMagicItem(Data MagicItemInsertInput!): MagicItem
+	insertOneMagicSchool(Data MagicSchoolInsertInput!): MagicSchool
+	insertOneMonster(Data MonsterInsertInput!): Monster
+	insertOneProficiency(Data ProficiencyInsertInput!): Proficiency
+	insertOneRace(Data RaceInsertInput!): Race
+	insertOneRule(Data RuleInsertInput!): Rule
+	insertOneRuleSection(Data RuleSectionInsertInput!): RuleSection
+	insertOneSkill(Data SkillInsertInput!): Skill
+	insertOneSpell(Data SpellInsertInput!): Spell
+	insertOneSpellcasting(Data SpellcastingInsertInput!): Spellcasting
+	insertOneStartingequipment(Data StartingequipmentInsertInput!): Startingequipment
+	insertOneSubclass(Data SubclassInsertInput!): Subclass
+	insertOneSubrace(Data SubraceInsertInput!): Subrace
+	insertOneTrait(Data TraitInsertInput!): Trait
+	insertOneWeaponProperty(Data WeaponPropertyInsertInput!): WeaponProperty
+	replaceOneAbilityScore(Data AbilityScoreInsertInput!, Query AbilityScoreQueryInput): AbilityScore
+	replaceOneClass(Query ClassQueryInput, Data ClassInsertInput!): Class
+	replaceOneCondition(Query ConditionQueryInput, Data ConditionInsertInput!): Condition
+	replaceOneDamageType(Query DamageTypeQueryInput, Data DamageTypeInsertInput!): DamageType
+	replaceOneEquipment(Query EquipmentQueryInput, Data EquipmentInsertInput!): Equipment
+	replaceOneEquipmentCategory(Query EquipmentCategoryQueryInput, Data EquipmentCategoryInsertInput!): EquipmentCategory
+	replaceOneFeature(Query FeatureQueryInput, Data FeatureInsertInput!): Feature
+	replaceOneLanguage(Query LanguageQueryInput, Data LanguageInsertInput!): Language
+	replaceOneLevel(Query LevelQueryInput, Data LevelInsertInput!): Level
+	replaceOneMagicItem(Data MagicItemInsertInput!, Query MagicItemQueryInput): MagicItem
+	replaceOneMagicSchool(Data MagicSchoolInsertInput!, Query MagicSchoolQueryInput): MagicSchool
+	replaceOneMonster(Query MonsterQueryInput, Data MonsterInsertInput!): Monster
+	replaceOneProficiency(Query ProficiencyQueryInput, Data ProficiencyInsertInput!): Proficiency
+	replaceOneRace(Query RaceQueryInput, Data RaceInsertInput!): Race
+	replaceOneRule(Query RuleQueryInput, Data RuleInsertInput!): Rule
+	replaceOneRuleSection(Query RuleSectionQueryInput, Data RuleSectionInsertInput!): RuleSection
+	replaceOneSkill(Query SkillQueryInput, Data SkillInsertInput!): Skill
+	replaceOneSpell(Query SpellQueryInput, Data SpellInsertInput!): Spell
+	replaceOneSpellcasting(Query SpellcastingQueryInput, Data SpellcastingInsertInput!): Spellcasting
+	replaceOneStartingequipment(Query StartingequipmentQueryInput, Data StartingequipmentInsertInput!): Startingequipment
+	replaceOneSubclass(Query SubclassQueryInput, Data SubclassInsertInput!): Subclass
+	replaceOneSubrace(Query SubraceQueryInput, Data SubraceInsertInput!): Subrace
+	replaceOneTrait(Query TraitQueryInput, Data TraitInsertInput!): Trait
+	replaceOneWeaponProperty(Query WeaponPropertyQueryInput, Data WeaponPropertyInsertInput!): WeaponProperty
+	updateManyAbilityScores(Query AbilityScoreQueryInput, Set AbilityScoreUpdateInput!): UpdateManyPayload
+	updateManyClasses(Query ClassQueryInput, Set ClassUpdateInput!): UpdateManyPayload
+	updateManyConditions(Query ConditionQueryInput, Set ConditionUpdateInput!): UpdateManyPayload
+	updateManyDamageTypes(Query DamageTypeQueryInput, Set DamageTypeUpdateInput!): UpdateManyPayload
+	updateManyEquipmentCategories(Query EquipmentCategoryQueryInput, Set EquipmentCategoryUpdateInput!): UpdateManyPayload
+	updateManyEquipments(Query EquipmentQueryInput, Set EquipmentUpdateInput!): UpdateManyPayload
+	updateManyFeatures(Query FeatureQueryInput, Set FeatureUpdateInput!): UpdateManyPayload
+	updateManyLanguages(Query LanguageQueryInput, Set LanguageUpdateInput!): UpdateManyPayload
+	updateManyLevels(Query LevelQueryInput, Set LevelUpdateInput!): UpdateManyPayload
+	updateManyMagicItems(Query MagicItemQueryInput, Set MagicItemUpdateInput!): UpdateManyPayload
+	updateManyMagicSchools(Query MagicSchoolQueryInput, Set MagicSchoolUpdateInput!): UpdateManyPayload
+	updateManyMonsters(Query MonsterQueryInput, Set MonsterUpdateInput!): UpdateManyPayload
+	updateManyProficiencies(Query ProficiencyQueryInput, Set ProficiencyUpdateInput!): UpdateManyPayload
+	updateManyRaces(Query RaceQueryInput, Set RaceUpdateInput!): UpdateManyPayload
+	updateManyRuleSections(Query RuleSectionQueryInput, Set RuleSectionUpdateInput!): UpdateManyPayload
+	updateManyRules(Query RuleQueryInput, Set RuleUpdateInput!): UpdateManyPayload
+	updateManySkills(Query SkillQueryInput, Set SkillUpdateInput!): UpdateManyPayload
+	updateManySpellcastings(Set SpellcastingUpdateInput!, Query SpellcastingQueryInput): UpdateManyPayload
+	updateManySpells(Set SpellUpdateInput!, Query SpellQueryInput): UpdateManyPayload
+	updateManyStartingequipments(Query StartingequipmentQueryInput, Set StartingequipmentUpdateInput!): UpdateManyPayload
+	updateManySubclasses(Query SubclassQueryInput, Set SubclassUpdateInput!): UpdateManyPayload
+	updateManySubraces(Query SubraceQueryInput, Set SubraceUpdateInput!): UpdateManyPayload
+	updateManyTraits(Query TraitQueryInput, Set TraitUpdateInput!): UpdateManyPayload
+	updateManyWeaponProperties(Query WeaponPropertyQueryInput, Set WeaponPropertyUpdateInput!): UpdateManyPayload
+	updateOneAbilityScore(Query AbilityScoreQueryInput, Set AbilityScoreUpdateInput!): AbilityScore
+	updateOneClass(Query ClassQueryInput, Set ClassUpdateInput!): Class
+	updateOneCondition(Query ConditionQueryInput, Set ConditionUpdateInput!): Condition
+	updateOneDamageType(Query DamageTypeQueryInput, Set DamageTypeUpdateInput!): DamageType
+	updateOneEquipment(Query EquipmentQueryInput, Set EquipmentUpdateInput!): Equipment
+	updateOneEquipmentCategory(Query EquipmentCategoryQueryInput, Set EquipmentCategoryUpdateInput!): EquipmentCategory
+	updateOneFeature(Query FeatureQueryInput, Set FeatureUpdateInput!): Feature
+	updateOneLanguage(Query LanguageQueryInput, Set LanguageUpdateInput!): Language
+	updateOneLevel(Query LevelQueryInput, Set LevelUpdateInput!): Level
+	updateOneMagicItem(Query MagicItemQueryInput, Set MagicItemUpdateInput!): MagicItem
+	updateOneMagicSchool(Query MagicSchoolQueryInput, Set MagicSchoolUpdateInput!): MagicSchool
+	updateOneMonster(Query MonsterQueryInput, Set MonsterUpdateInput!): Monster
+	updateOneProficiency(Query ProficiencyQueryInput, Set ProficiencyUpdateInput!): Proficiency
+	updateOneRace(Query RaceQueryInput, Set RaceUpdateInput!): Race
+	updateOneRule(Query RuleQueryInput, Set RuleUpdateInput!): Rule
+	updateOneRuleSection(Query RuleSectionQueryInput, Set RuleSectionUpdateInput!): RuleSection
+	updateOneSkill(Query SkillQueryInput, Set SkillUpdateInput!): Skill
+	updateOneSpell(Query SpellQueryInput, Set SpellUpdateInput!): Spell
+	updateOneSpellcasting(Query SpellcastingQueryInput, Set SpellcastingUpdateInput!): Spellcasting
+	updateOneStartingequipment(Query StartingequipmentQueryInput, Set StartingequipmentUpdateInput!): Startingequipment
+	updateOneSubclass(Query SubclassQueryInput, Set SubclassUpdateInput!): Subclass
+	updateOneSubrace(Query SubraceQueryInput, Set SubraceUpdateInput!): Subrace
+	updateOneTrait(Set TraitUpdateInput!, Query TraitQueryInput): Trait
+	updateOneWeaponProperty(Query WeaponPropertyQueryInput, Set WeaponPropertyUpdateInput!): WeaponProperty
+	upsertOneAbilityScore(Query AbilityScoreQueryInput, Data AbilityScoreInsertInput!): AbilityScore
+	upsertOneClass(Data ClassInsertInput!, Query ClassQueryInput): Class
+	upsertOneCondition(Query ConditionQueryInput, Data ConditionInsertInput!): Condition
+	upsertOneDamageType(Query DamageTypeQueryInput, Data DamageTypeInsertInput!): DamageType
+	upsertOneEquipment(Query EquipmentQueryInput, Data EquipmentInsertInput!): Equipment
+	upsertOneEquipmentCategory(Query EquipmentCategoryQueryInput, Data EquipmentCategoryInsertInput!): EquipmentCategory
+	upsertOneFeature(Query FeatureQueryInput, Data FeatureInsertInput!): Feature
+	upsertOneLanguage(Query LanguageQueryInput, Data LanguageInsertInput!): Language
+	upsertOneLevel(Query LevelQueryInput, Data LevelInsertInput!): Level
+	upsertOneMagicItem(Query MagicItemQueryInput, Data MagicItemInsertInput!): MagicItem
+	upsertOneMagicSchool(Data MagicSchoolInsertInput!, Query MagicSchoolQueryInput): MagicSchool
+	upsertOneMonster(Query MonsterQueryInput, Data MonsterInsertInput!): Monster
+	upsertOneProficiency(Query ProficiencyQueryInput, Data ProficiencyInsertInput!): Proficiency
+	upsertOneRace(Query RaceQueryInput, Data RaceInsertInput!): Race
+	upsertOneRule(Query RuleQueryInput, Data RuleInsertInput!): Rule
+	upsertOneRuleSection(Query RuleSectionQueryInput, Data RuleSectionInsertInput!): RuleSection
+	upsertOneSkill(Query SkillQueryInput, Data SkillInsertInput!): Skill
+	upsertOneSpell(Query SpellQueryInput, Data SpellInsertInput!): Spell
+	upsertOneSpellcasting(Query SpellcastingQueryInput, Data SpellcastingInsertInput!): Spellcasting
+	upsertOneStartingequipment(Query StartingequipmentQueryInput, Data StartingequipmentInsertInput!): Startingequipment
+	upsertOneSubclass(Query SubclassQueryInput, Data SubclassInsertInput!): Subclass
+	upsertOneSubrace(Query SubraceQueryInput, Data SubraceInsertInput!): Subrace
+	upsertOneTrait(Query TraitQueryInput, Data TraitInsertInput!): Trait
+	upsertOneWeaponProperty(Query WeaponPropertyQueryInput, Data WeaponPropertyInsertInput!): WeaponProperty
+}
+ type Proficiency struct {
+	Classes []ProficiencyClass
+	Index string
+	Name string
+	Races []ProficiencyRace
+	References []ProficiencyReference
+	Type string
+	Url string
+}
+ type ProficiencyClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type ProficiencyRace struct {
+	Index string
+	Name string
+	Url string
+}
+ type ProficiencyReference struct {
+	Index string
+	Name string
+	Type string
+	Url string
+}
+ type Query struct {
+	abilityScore(Query AbilityScoreQueryInput): AbilityScore
+	abilityScores(Query AbilityScoreQueryInput, Limit int32 = 100, SortBy AbilityScoreSortByInput): []AbilityScore!
+	class(Query ClassQueryInput): Class
+	classes(Query ClassQueryInput, Limit int32 = 100, SortBy ClassSortByInput): []Class!
+	condition(Query ConditionQueryInput): Condition
+	conditions(Limit int32 = 100, SortBy ConditionSortByInput, Query ConditionQueryInput): []Condition!
+	damageType(Query DamageTypeQueryInput): DamageType
+	damageTypes(Limit int32 = 100, SortBy DamageTypeSortByInput, Query DamageTypeQueryInput): []DamageType!
+	equipment(Query EquipmentQueryInput): Equipment
+	equipmentCategories(Limit int32 = 100, SortBy EquipmentCategorySortByInput, Query EquipmentCategoryQueryInput): []EquipmentCategory!
+	equipmentCategory(Query EquipmentCategoryQueryInput): EquipmentCategory
+	equipments(Query EquipmentQueryInput, Limit int32 = 100, SortBy EquipmentSortByInput): []Equipment!
+	feature(Query FeatureQueryInput): Feature
+	features(Query FeatureQueryInput, Limit int32 = 100, SortBy FeatureSortByInput): []Feature!
+	language(Query LanguageQueryInput): Language
+	languages(SortBy LanguageSortByInput, Query LanguageQueryInput, Limit int32 = 100): []Language!
+	level(Query LevelQueryInput): Level
+	levels(Query LevelQueryInput, Limit int32 = 100, SortBy LevelSortByInput): []Level!
+	magicItem(Query MagicItemQueryInput): MagicItem
+	magicItems(Query MagicItemQueryInput, Limit int32 = 100, SortBy MagicItemSortByInput): []MagicItem!
+	magicSchool(Query MagicSchoolQueryInput): MagicSchool
+	magicSchools(Query MagicSchoolQueryInput, Limit int32 = 100, SortBy MagicSchoolSortByInput): []MagicSchool!
+	monster(Query MonsterQueryInput): Monster
+	monsters(Query MonsterQueryInput, Limit int32 = 100, SortBy MonsterSortByInput): []Monster!
+	proficiencies(Query ProficiencyQueryInput, Limit int32 = 100, SortBy ProficiencySortByInput): []Proficiency!
+	proficiency(Query ProficiencyQueryInput): Proficiency
+	race(Query RaceQueryInput): Race
+	races(Query RaceQueryInput, Limit int32 = 100, SortBy RaceSortByInput): []Race!
+	rule(Query RuleQueryInput): Rule
+	ruleSection(Query RuleSectionQueryInput): RuleSection
+	ruleSections(Query RuleSectionQueryInput, Limit int32 = 100, SortBy RuleSectionSortByInput): []RuleSection!
+	rules(SortBy RuleSortByInput, Query RuleQueryInput, Limit int32 = 100): []Rule!
+	skill(Query SkillQueryInput): Skill
+	skills(Query SkillQueryInput, Limit int32 = 100, SortBy SkillSortByInput): []Skill!
+	spell(Query SpellQueryInput): Spell
+	spellcasting(Query SpellcastingQueryInput): Spellcasting
+	spellcastings(Query SpellcastingQueryInput, Limit int32 = 100, SortBy SpellcastingSortByInput): []Spellcasting!
+	spells(Query SpellQueryInput, Limit int32 = 100, SortBy SpellSortByInput): []Spell!
+	startingequipment(Query StartingequipmentQueryInput): Startingequipment
+	startingequipments(Query StartingequipmentQueryInput, Limit int32 = 100, SortBy StartingequipmentSortByInput): []Startingequipment!
+	subclass(Query SubclassQueryInput): Subclass
+	subclasses(Query SubclassQueryInput, Limit int32 = 100, SortBy SubclassSortByInput): []Subclass!
+	subrace(Query SubraceQueryInput): Subrace
+	subraces(Query SubraceQueryInput, Limit int32 = 100, SortBy SubraceSortByInput): []Subrace!
+	trait(Query TraitQueryInput): Trait
+	traits(Limit int32 = 100, SortBy TraitSortByInput, Query TraitQueryInput): []Trait!
+	weaponProperties(Query WeaponPropertyQueryInput, Limit int32 = 100, SortBy WeaponPropertySortByInput): []WeaponProperty!
+	weaponProperty(Query WeaponPropertyQueryInput): WeaponProperty
+}
+ type Race struct {
+	AbilityBonusOptions RaceAbility_bonus_option
+	AbilityBonuses []RaceAbility_bonuse
+	Age string
+	Alignment string
+	Index string
+	LanguageDesc string
+	LanguageOptions RaceLanguage_option
+	Languages []RaceLanguage
+	Name string
+	Size string
+	SizeDescription string
+	Speed int32
+	StartingProficiencies []RaceStarting_proficiency
+	StartingProficiencyOptions RaceStarting_proficiency_option
+	Subraces []RaceSubrace
+	TraitOptions RaceTrait_option
+	Traits []RaceTrait
+	Url string
+}
+ type RaceAbility_bonus_option struct {
+	Choose int32
+	From []RaceAbility_bonus_optionFrom
+	Type string
+}
+ type RaceAbility_bonus_optionFrom struct {
+	Bonus int32
+	Index string
+	Name string
+	Url string
+}
+ type RaceAbility_bonuse struct {
+	Bonus int32
+	Index string
+	Name string
+	Url string
+}
+ type RaceLanguage struct {
+	Index string
+	Name string
+	Url string
+}
+ type RaceLanguage_option struct {
+	Choose int32
+	From []RaceLanguage_optionFrom
+	Type string
+}
+ type RaceLanguage_optionFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type RaceStarting_proficiency struct {
+	Index string
+	Name string
+	Url string
+}
+ type RaceStarting_proficiency_option struct {
+	Choose int32
+	From []RaceStarting_proficiency_optionFrom
+	Type string
+}
+ type RaceStarting_proficiency_optionFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type RaceSubrace struct {
+	Index string
+	Name string
+	Url string
+}
+ type RaceTrait struct {
+	Index string
+	Name string
+	Url string
+}
+ type RaceTrait_option struct {
+	Choose int32
+	From []RaceTrait_optionFrom
+	Type string
+}
+ type RaceTrait_optionFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type Rule struct {
+	Desc string
+	Index string
+	Name string
+	Subsections []RuleSubsection
+	Url string
+}
+ type RuleSection struct {
+	Desc string
+	Index string
+	Name string
+	Url string
+}
+ type RuleSubsection struct {
+	Index string
+	Name string
+	Url string
+}
+ type Skill struct {
+	AbilityScore SkillAbility_score
+	Desc []string
+	Index string
+	Name string
+	Url string
+}
+ type SkillAbility_score struct {
+	Index string
+	Name string
+	Url string
+}
+ type Spell struct {
+	AreaOfEffect SpellArea_of_effect
+	AttackType string
+	CastingTime string
+	Classes []SpellClass
+	Components []string
+	Concentration boolean
+	Damage SpellDamage
+	Dc SpellDc
+	Desc []string
+	Duration string
+	HealAtSlotLevel SpellHeal_at_slot_level
+	HigherLevel []string
+	Index string
+	Level int32
+	Material string
+	Name string
+	Range string
+	Ritual boolean
+	School SpellSchool
+	Subclasses []SpellSubclass
+	Url string
+}
+ type SpellArea_of_effect struct {
+	Size int32
+	Type string
+}
+ type Spellcasting struct {
+	Class SpellcastingClass
+	Index string
+	Info []SpellcastingInfo
+	Level int32
+	SpellcastingAbility SpellcastingSpellcasting_ability
+	Url string
+}
+ type SpellcastingClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type SpellcastingInfo struct {
+	Desc []string
+	Name string
+}
+ type SpellcastingSpellcasting_ability struct {
+	Index string
+	Name string
+	Url string
+}
+ type SpellClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type SpellDamage struct {
+	DamageAtCharacterLevel SpellDamageDamage_at_character_level
+	DamageAtSlotLevel SpellDamageDamage_at_slot_level
+	DamageType SpellDamageDamage_type
+}
+ type SpellDamageDamage_at_character_level struct {
+	A1 string
+	A11 string
+	A17 string
+	A5 string
+}
+ type SpellDamageDamage_at_slot_level struct {
+	A1 string
+	A2 string
+	A3 string
+	A4 string
+	A5 string
+	A6 string
+	A7 string
+	A8 string
+	A9 string
+}
+ type SpellDamageDamage_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type SpellDc struct {
+	DcSuccess string
+	DcType SpellDcDc_type
+	Desc string
+}
+ type SpellDcDc_type struct {
+	Index string
+	Name string
+	Url string
+}
+ type SpellHeal_at_slot_level struct {
+	A1 string
+	A2 string
+	A3 string
+	A4 string
+	A5 string
+	A6 string
+	A7 string
+	A8 string
+	A9 string
+}
+ type SpellSchool struct {
+	Index string
+	Name string
+	Url string
+}
+ type SpellSubclass struct {
+	Index string
+	Name string
+	Url string
+}
+ type Startingequipment struct {
+	Class StartingequipmentClass
+	Index string
+	StartingEquipment []StartingequipmentStarting_equipment
+	StartingEquipmentOptions []StartingequipmentStarting_equipment_option
+	Url string
+}
+ type StartingequipmentClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type StartingequipmentStarting_equipment struct {
+	Equipment StartingequipmentStarting_equipmentEquipment
+	Quantity int32
+}
+ type StartingequipmentStarting_equipment_option struct {
+	Choose int32
+	From []StartingequipmentStarting_equipment_optionFrom
+	Type string
+}
+ type StartingequipmentStarting_equipment_optionFrom struct {
+	Equipment StartingequipmentStarting_equipment_optionFromEquipment
+	Quantity int32
+}
+ type StartingequipmentStarting_equipment_optionFromEquipment struct {
+	Index string
+	Name string
+	Url string
+}
+ type StartingequipmentStarting_equipmentEquipment struct {
+	Index string
+	Name string
+	Url string
+}
+ type Subclass struct {
+	Class SubclassClass
+	Desc []string
+	Index string
+	Name string
+	Spells []SubclassSpell
+	SubclassFlavor string
+	SubclassLevels string
+	Url string
+}
+ type SubclassClass struct {
+	Index string
+	Name string
+	Url string
+}
+ type SubclassSpell struct {
+	Prerequisites []SubclassSpellPrerequisite
+	Spell SubclassSpellSpell
+}
+ type SubclassSpellPrerequisite struct {
+	Index string
+	Name string
+	Type string
+	Url string
+}
+ type SubclassSpellSpell struct {
+	Index string
+	Name string
+	Url string
+}
+ type Subrace struct {
+	AbilityBonuses []SubraceAbility_bonuse
+	Desc string
+	Index string
+	LanguageOptions SubraceLanguage_option
+	Name string
+	Race SubraceRace
+	RacialTraitOptions SubraceRacial_trait_option
+	RacialTraits []SubraceRacial_trait
+	StartingProficiencies []SubraceStarting_proficiency
+	Url string
+}
+ type SubraceAbility_bonuse struct {
+	Bonus int32
+	Index string
+	Name string
+	Url string
+}
+ type SubraceLanguage_option struct {
+	Choose int32
+	From []SubraceLanguage_optionFrom
+	Type string
+}
+ type SubraceLanguage_optionFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type SubraceRace struct {
+	Index string
+	Name string
+	Url string
+}
+ type SubraceRacial_trait struct {
+	Index string
+	Name string
+	Url string
+}
+ type SubraceRacial_trait_option struct {
+	Choose int32
+	From []SubraceRacial_trait_optionFrom
+	Type string
+}
+ type SubraceRacial_trait_optionFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type SubraceStarting_proficiency struct {
+	Index string
+	Name string
+	Url string
+}
+ type Trait struct {
+	Desc []string
+	Index string
+	Name string
+	Proficiencies []TraitProficiency
+	ProficiencyChoices TraitProficiency_choice
+	Races []TraitRace
+	Subraces []TraitSubrace
+	Url string
+}
+ type TraitProficiency struct {
+	Index string
+	Name string
+	Url string
+}
+ type TraitProficiency_choice struct {
+	Choose int32
+	From []TraitProficiency_choiceFrom
+	Type string
+}
+ type TraitProficiency_choiceFrom struct {
+	Index string
+	Name string
+	Url string
+}
+ type TraitRace struct {
+	Index string
+	Name string
+	Url string
+}
+ type TraitSubrace struct {
+	Index string
+	Name string
+	Url string
+}
+ type UpdateManyPayload struct {
+	MatchedCount int32!
+	ModifiedCount int32!
+}
+ type WeaponProperty struct {
+	Desc []string
+	Index string
+	Name string
+	Url string
+}
+]
