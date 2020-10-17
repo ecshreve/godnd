@@ -1,3 +1,5 @@
+// +build ignore
+
 package genny
 
 // AbilityScore is a AbilityScore

@@ -38,7 +38,7 @@ func TestIsApiReference(t *testing.T) {
 
 	for _, testcase := range testcases {
 		t.Run(testcase.desc, func(t *testing.T) {
-			actual := genny.IsApiReference(testcase.input)
+			actual := genny.IsCommonType(testcase.input)
 			assert.Equal(t, testcase.expected, actual)
 		})
 	}

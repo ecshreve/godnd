@@ -1,3 +1,5 @@
+// +build ignore
+
 package genny
 
 import (
@@ -7,13 +9,6 @@ import (
 	"regexp"
 	"strings"
 )
-
-var GqlToGoScalarTypeMap = map[string]string{
-	"Int":    "int32",
-	"Float":  "float64",
-	"String": "string",
-	"Bool":   "bool",
-}
 
 var typeRe = regexp.MustCompile(`(?s)type [^\{]+ \{[^\}]+\}`)
 var typeDeclRe = regexp.MustCompile(`(type [^\{]+) (\{)`)

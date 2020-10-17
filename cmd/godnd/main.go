@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/ecshreve/godnd/pkg/genny"
+	"fmt"
 )
 
 func main() {
-	parser := genny.Parser{}
-	parser.ParseGqlSchema()
+	fmt.Println("gndnd")
 }

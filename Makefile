@@ -21,6 +21,8 @@ run-godnd:
 run-genny: 
 	bin/genny
 
+prep: build install
+
 genny: clean build run-genny
 
 test:
