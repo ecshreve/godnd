@@ -9,5 +9,3 @@ var SupportedTypes = []string{
 var CommonTypes = []string{
 	"Choice",
 }
-
-func dummy() {}
