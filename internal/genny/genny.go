@@ -11,28 +11,31 @@ import (
 	"github.com/samsarahq/go/oops"
 )
 
-func GenerateTypes() {
-	apiTypeStr, _ := parseResourceFile("ability-scores")
+func GenerateTypes(resourceRefs []string) {
+	var allParsed []map[string]string
+	for _, resource := range resourceRefs {
+		parsed, _ := parseResourceFile(resource)
+		allParsed = append(allParsed, parsed)
+	}
 
-	fmt.Println(apiTypeStr)
+	fmt.Println(allParsed)
 }
 
-func parseResourceFile(resourceName string) (string, error) {
+func parseResourceFile(resourceName string) (map[string]string, error) {
 	docFilePath := fmt.Sprintf("%s/doc-resource-%s.ejs", DocFilePath, resourceName)
 	docFile, err := os.Open(docFilePath)
 	if err != nil {
-		return "", oops.Wrapf(err, "error opening doc file for resource: %s with path: %s", resourceName, docFilePath)
+		return nil, oops.Wrapf(err, "error opening doc file for resource: %s with path: %s", resourceName, docFilePath)
 	}
 
 	b, err := ioutil.ReadAll(docFile)
 	if err != nil {
-		return "", oops.Wrapf(err, "error reading doc file for resource: %s", resourceName)
+		return nil, oops.Wrapf(err, "error reading doc file for resource: %s", resourceName)
 	}
 	rawStr := string(b)
 
-	x := parseEndpoints(rawStr)
-	fmt.Println(x)
-	return "", nil
+	result := parseEndpoints(rawStr)
+	return result, nil
 }
 
 func parseEndpoints(fullDoc string) map[string]string {
