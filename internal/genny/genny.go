@@ -2,6 +2,7 @@ package genny
 
 import (
 	"fmt"
+	"go/format"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -12,6 +13,7 @@ import (
 
 func GenerateTypes() {
 	apiTypeStr, _ := getAPIGoTypeStr("ability-scores")
+
 	fmt.Println(apiTypeStr)
 }
 
@@ -44,8 +46,9 @@ func getAPIGoTypeStr(resourceName string) (string, error) {
 	fieldsStr := strings.Join(fields, "\n")
 
 	typeStr := fmt.Sprintf("type %s struct {\n%s\n}", typeName, fieldsStr)
-	fmt.Println(typeStr)
-	return "", nil
+	typeStrFormatted, _ := format.Source([]byte(typeStr))
+
+	return string(typeStrFormatted), nil
 }
 
 func getAPIGoTypeFieldStr(field string) string {
