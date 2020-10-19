@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	toGen := []string{"ability-scores"}
+	toGen := []string{"ability-scores", "skills"}
 	genny.GenerateTypes(toGen)
 }
