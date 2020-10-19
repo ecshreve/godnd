@@ -22,3 +22,5 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c h1:dUUwHk2QECo/6vqA44rthZ8ie2QXMNeKRTHCNY2nXvo=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+github.com/samsarahq/go v0.0.0-20191220233105-8077c9fbaed5 h1:x45emkhsiiRJQxqtI1tMxxqDDHVpz30YjQhl+WTozRE=
+github.com/samsarahq/go v0.0.0-20191220233105-8077c9fbaed5/go.mod h1:J7RmrHmcZ0rfq31ocAbPajAg/xxWSXOXy1ruhdpDL5Y=
