@@ -12,12 +12,12 @@ import (
 )
 
 func GenerateTypes() {
-	apiTypeStr, _ := getAPIGoTypeStr("ability-scores")
+	apiTypeStr, _ := parseResourceFile("classes")
 
 	fmt.Println(apiTypeStr)
 }
 
-func getAPIGoTypeStr(resourceName string) (string, error) {
+func parseResourceFile(resourceName string) (string, error) {
 	docFilePath := fmt.Sprintf("%s/doc-resource-%s.ejs", DocFilePath, resourceName)
 	docFile, err := os.Open(docFilePath)
 	if err != nil {
@@ -30,52 +30,80 @@ func getAPIGoTypeStr(resourceName string) (string, error) {
 	}
 	rawStr := string(b)
 
-	typeNameRe := regexp.MustCompile(`<h4>(.*)</h4>`)
-	typeNameRaw := typeNameRe.FindStringSubmatch(rawStr)[1]
-	typeName := regexp.MustCompile(`\s+`).ReplaceAllString(typeNameRaw, "")
-
-	tableBodyRe := regexp.MustCompile(`(?s)<tbody>.*</tbody>`)
-	tableRowRe := regexp.MustCompile(`<tr>\s*(<td.*>\s*.*\s*</td>\s*){3}</tr>`)
-	tableBody := tableBodyRe.FindString(rawStr)
-	tableRows := tableRowRe.FindAllString(tableBody, -1)
-
-	var fields []string
-	for _, row := range tableRows {
-		fields = append(fields, getAPIGoTypeFieldStr(row))
-	}
-	fieldsStr := strings.Join(fields, "\n")
-
-	typeStr := fmt.Sprintf("type %s struct {\n%s\n}", typeName, fieldsStr)
-	typeStrFormatted, _ := format.Source([]byte(typeStr))
-
-	return string(typeStrFormatted), nil
+	x := parseEndpoints(rawStr)
+	fmt.Println(x)
+	return "", nil
 }
 
-func getAPIGoTypeFieldStr(field string) string {
-	stripped := regexp.MustCompile(`(\n|\t|  )`).ReplaceAllString(field, "")
-	elems := regexp.MustCompile(`</td>`).Split(stripped, 3)
+func parseEndpoints(fullDoc string) map[string]string {
+	fullEndpointRe := regexp.MustCompile(`(?s)<h3>.*?</h3>.*?<table>(\s|.)*?</table>`)
+	endpointRefRe := regexp.MustCompile(`<h3>.*? (.*?)</h3>`)
+	endpoints := fullEndpointRe.FindAllString(fullDoc, -1)
 
-	elemContentsRe := regexp.MustCompile(`<td[^>]*>(.*)$`)
-	fieldNameRaw := elemContentsRe.FindStringSubmatch(elems[0])[1]
+	endpointRefToTypeStr := make(map[string]string)
+	for _, endpoint := range endpoints {
+		endpointRef := endpointRefRe.FindStringSubmatch(endpoint)[1]
+		endpointTypeStr := parseEndpoint(endpoint)
+		endpointRefToTypeStr[endpointRef] = endpointTypeStr
+	}
+	return endpointRefToTypeStr
+}
+
+func parseEndpoint(endpointStr string) string {
+	typeTableRe := regexp.MustCompile(`(?s)<h4>(.*?)</h4>\s*<table>(\s|.)*?</table>`)
+	typeTable := typeTableRe.FindString(endpointStr)
+	return parseTable(typeTable)
+}
+
+func parseTable(table string) string {
+	tableTitleRe := regexp.MustCompile(`<h4>(.*?)</h4>`)
+	tableTitle := tableTitleRe.FindStringSubmatch(table)[1]
+	typeName := spaceSepToCamel(tableTitle)
+
+	tableRowRe := regexp.MustCompile(`(?s)<tr>\s*(<td.*?>.*?</td>\s*){3}\s*</tr>`)
+	tableRows := tableRowRe.FindAllString(table, -1)
+
+	var parsedRows []string
+	for _, row := range tableRows {
+		parsedRows = append(parsedRows, parseTableRow(row))
+	}
+	fields := strings.Join(parsedRows, "\n")
+
+	typeStr := fmt.Sprintf("type %s struct {\n%s\n}", typeName, fields)
+	formattedTypeStr, _ := format.Source([]byte(typeStr))
+	return string(formattedTypeStr)
+}
+
+func parseTableRow(row string) string {
+	rowElementRe := regexp.MustCompile(`(?s)<td.*?>.*?</td>`)
+	rowElements := rowElementRe.FindAllString(row, -1)
+
+	elemContentsRe := regexp.MustCompile(`(?s)<td.*?>(.*?)</td>`)
+	fieldNameRaw := elemContentsRe.FindStringSubmatch(rowElements[0])[1]
 	fieldName := snakeToCamel(fieldNameRaw)
 
-	fieldDesc := elemContentsRe.FindStringSubmatch(elems[1])[1]
-	fieldTypeRaw := elemContentsRe.FindStringSubmatch(elems[2])[1]
+	fieldTypeRaw := elemContentsRe.FindStringSubmatch(rowElements[2])[1]
+	fieldType := parseFieldType(fieldTypeRaw)
 
-	// TODO: add validation checks.
+	parsed := fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, fieldType, fieldNameRaw)
+
+	return parsed
+}
+
+func parseFieldType(elem string) string {
 	fieldType := ""
-	if regexp.MustCompile(`APIReference`).MatchString(fieldTypeRaw) {
+	if regexp.MustCompile(`APIReference`).MatchString(elem) {
 		fieldType = fmt.Sprintf("APIReference")
+	} else if regexp.MustCompile(`Choice`).MatchString(elem) {
+		fieldType = fmt.Sprintf("Choice")
 	} else {
-		scalar := regexp.MustCompile(`(\S+)</td>`).FindStringSubmatch(fieldTypeRaw)[1]
+		scalar := regexp.MustCompile(`\S+`).FindString(elem)
 		fieldType = fmt.Sprintf("%s", scalar)
 	}
 
-	if regexp.MustCompile(`list`).MatchString(fieldTypeRaw) {
+	if regexp.MustCompile(`list`).MatchString(elem) {
 		fieldType = fmt.Sprintf("[]%s", fieldType)
 	}
 
-	fieldGoTypeStr := fmt.Sprintf("%s %s `json:\"%s\"`// %s", fieldName, fieldType, fieldNameRaw, fieldDesc)
-	return fieldGoTypeStr
-
+	return fieldType
 }
