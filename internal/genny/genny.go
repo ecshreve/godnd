@@ -12,7 +12,7 @@ import (
 )
 
 func GenerateTypes() {
-	apiTypeStr, _ := parseResourceFile("classes")
+	apiTypeStr, _ := parseResourceFile("ability-scores")
 
 	fmt.Println(apiTypeStr)
 }
@@ -97,8 +97,8 @@ func parseFieldType(elem string) string {
 	} else if regexp.MustCompile(`Choice`).MatchString(elem) {
 		fieldType = fmt.Sprintf("Choice")
 	} else {
-		scalar := regexp.MustCompile(`\S+`).FindString(elem)
-		fieldType = fmt.Sprintf("%s", scalar)
+		scalar := regexp.MustCompile(`\S+$`).FindString(elem)
+		fieldType = fmt.Sprintf("%s", apiScalarToGoScalar[scalar])
 	}
 
 	if regexp.MustCompile(`list`).MatchString(elem) {

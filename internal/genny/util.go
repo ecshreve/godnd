@@ -38,6 +38,11 @@ var resourceToEndpoint = map[string]string{
 	"weapon-properties":    "/api/weapon-properties",
 }
 
+var apiScalarToGoScalar = map[string]string{
+	"string":  "string",
+	"integer": "int32",
+}
+
 func snakeToCamel(s string) string {
 	b := []byte(strings.TrimSpace(s))
 	buffer := make([]byte, 0, len(s))
