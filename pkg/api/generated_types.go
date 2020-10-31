@@ -42,32 +42,6 @@ type apiLanguage struct {
 	Url             string   `json:"url"`
 }
 
-// generated response type for api/classes/{index}/features/
-type apiFeaturesForClass struct {
-	Count   int32          `json:"count"`
-	Results []APIReference `json:"results"`
-}
-
-// generated response type for api/classes/{index}/levels/{integer 1-20}
-type apiLevelForClass struct {
-	Index               string                 `json:"index"`
-	Level               int32                  `json:"level"`
-	AbilityScoreBonuses int32                  `json:"ability_score_bonuses"`
-	ProfBonus           int32                  `json:"prof_bonus"`
-	FeatureChoices      []APIReference         `json:"feature_choices"`
-	Features            []APIReference         `json:"features"`
-	Spellcasting        map[string]interface{} `json:"spellcasting"`
-	ClassSpecific       map[string]interface{} `json:"class_specific"`
-	Class               APIReference           `json:"class"`
-	Url                 string                 `json:"url"`
-}
-
-// generated response type for api/classes/{index}/levels/{integer 1-20}/spells
-type apiSpellsForClassAndLevel struct {
-	Count   int32          `json:"count"`
-	Results []APIReference `json:"results"`
-}
-
 // generated response type for api/classes/{index}
 type apiClass struct {
 	Index              string         `json:"index"`
@@ -96,6 +70,12 @@ type apiSpellsForClass struct {
 	Results []APIReference `json:"results"`
 }
 
+// generated response type for api/classes/{index}/features/
+type apiFeaturesForClass struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
 // generated response type for api/classes/{index}/proficiencies/
 type apiProficienciesForClass struct {
 	Count   int32          `json:"count"`
@@ -116,8 +96,28 @@ type apiLevelsForClass struct {
 	Url                 string                 `json:"url"`
 }
 
+// generated response type for api/classes/{index}/levels/{integer 1-20}
+type apiLevelForClass struct {
+	Index               string                 `json:"index"`
+	Level               int32                  `json:"level"`
+	AbilityScoreBonuses int32                  `json:"ability_score_bonuses"`
+	ProfBonus           int32                  `json:"prof_bonus"`
+	FeatureChoices      []APIReference         `json:"feature_choices"`
+	Features            []APIReference         `json:"features"`
+	Spellcasting        map[string]interface{} `json:"spellcasting"`
+	ClassSpecific       map[string]interface{} `json:"class_specific"`
+	Class               APIReference           `json:"class"`
+	Url                 string                 `json:"url"`
+}
+
 // generated response type for api/classes/{index}/levels/{integer 1-20}/features
 type apiFeaturesForClassAndLevel struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/classes/{index}/levels/{integer 1-20}/spells
+type apiSpellsForClassAndLevel struct {
 	Count   int32          `json:"count"`
 	Results []APIReference `json:"results"`
 }
