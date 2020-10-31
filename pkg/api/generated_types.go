@@ -42,16 +42,24 @@ type apiLanguage struct {
 	Url             string   `json:"url"`
 }
 
-// generated response type for api/classes/{index}/proficiencies/
-type apiProficienciesForClass struct {
+// generated response type for api/classes/{index}/features/
+type apiFeaturesForClass struct {
 	Count   int32          `json:"count"`
 	Results []APIReference `json:"results"`
 }
 
-// generated response type for api/classes/{index}/levels/{integer 1-20}/features
-type apiFeaturesForClassAndLevel struct {
-	Count   int32          `json:"count"`
-	Results []APIReference `json:"results"`
+// generated response type for api/classes/{index}/levels/{integer 1-20}
+type apiLevelForClass struct {
+	Index               string                 `json:"index"`
+	Level               int32                  `json:"level"`
+	AbilityScoreBonuses int32                  `json:"ability_score_bonuses"`
+	ProfBonus           int32                  `json:"prof_bonus"`
+	FeatureChoices      []APIReference         `json:"feature_choices"`
+	Features            []APIReference         `json:"features"`
+	Spellcasting        map[string]interface{} `json:"spellcasting"`
+	ClassSpecific       map[string]interface{} `json:"class_specific"`
+	Class               APIReference           `json:"class"`
+	Url                 string                 `json:"url"`
 }
 
 // generated response type for api/classes/{index}/levels/{integer 1-20}/spells
@@ -68,16 +76,28 @@ type apiClass struct {
 	ProficiencyChoices []Choice       `json:"proficiency_choices"`
 	Proficiencies      []APIReference `json:"proficiencies"`
 	SavingThrows       []APIReference `json:"saving_throws"`
-	StartingEquipment  string         `json:"starting_equipment"`
-	ClassLevels        string         `json:"class_levels"`
+	StartingEquipment  URLRefString   `json:"starting_equipment"`
+	ClassLevels        URLRefString   `json:"class_levels"`
 	Subclasses         []APIReference `json:"subclasses"`
-	Spellcasting       string         `json:"spellcasting"`
-	Spells             string         `json:"spells"`
+	Spellcasting       URLRefString   `json:"spellcasting"`
+	Spells             URLRefString   `json:"spells"`
 	Url                string         `json:"url"`
 }
 
 // generated response type for api/classes/{index}/subclasses/
 type apiSubclassesForClass struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/classes/{index}/spells/
+type apiSpellsForClass struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/classes/{index}/proficiencies/
+type apiProficienciesForClass struct {
 	Count   int32          `json:"count"`
 	Results []APIReference `json:"results"`
 }
@@ -96,28 +116,8 @@ type apiLevelsForClass struct {
 	Url                 string                 `json:"url"`
 }
 
-// generated response type for api/classes/{index}/levels/{integer 1-20}
-type apiLevelForClass struct {
-	Index               string                 `json:"index"`
-	Level               int32                  `json:"level"`
-	AbilityScoreBonuses int32                  `json:"ability_score_bonuses"`
-	ProfBonus           int32                  `json:"prof_bonus"`
-	FeatureChoices      []APIReference         `json:"feature_choices"`
-	Features            []APIReference         `json:"features"`
-	Spellcasting        map[string]interface{} `json:"spellcasting"`
-	ClassSpecific       map[string]interface{} `json:"class_specific"`
-	Class               APIReference           `json:"class"`
-	Url                 string                 `json:"url"`
-}
-
-// generated response type for api/classes/{index}/spells/
-type apiSpellsForClass struct {
-	Count   int32          `json:"count"`
-	Results []APIReference `json:"results"`
-}
-
-// generated response type for api/classes/{index}/features/
-type apiFeaturesForClass struct {
+// generated response type for api/classes/{index}/levels/{integer 1-20}/features
+type apiFeaturesForClassAndLevel struct {
 	Count   int32          `json:"count"`
 	Results []APIReference `json:"results"`
 }

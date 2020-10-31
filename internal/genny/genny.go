@@ -114,7 +114,7 @@ func parseFieldType(elem string) string {
 	}
 
 	if fieldType == "" && regexp.MustCompile(`(?s).*string.+`).MatchString(elem) {
-		fieldType = fmt.Sprintf("string")
+		fieldType = fmt.Sprintf("URLRefString")
 	}
 
 	if regexp.MustCompile(`list`).MatchString(elem) {

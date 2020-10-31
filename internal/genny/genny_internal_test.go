@@ -45,7 +45,7 @@ func TestParseFieldType(t *testing.T) {
 		{
 			desc:     "string api url reference to another type",
 			input:    `\t\t\t\tstring (<a href="#starting-equipment">StartingEquipment</a>)\t\t\t`,
-			expected: "string",
+			expected: "URLRefString",
 		},
 	}
 

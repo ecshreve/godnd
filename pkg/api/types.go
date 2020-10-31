@@ -2,6 +2,8 @@ package api
 
 //go:generate genny
 
+type URLRefString string
+
 // ResourceList is a list of APIReferences for an endpoint.
 type ResourceList struct {
 	Count     int            `json:"count"`

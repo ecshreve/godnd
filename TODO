@@ -1,0 +1,3 @@
+☐ fix iteration through endpoints
+    in the main generate function we iterate through a map so the results are not
+    deterministic, it would be nice if the generated file was
