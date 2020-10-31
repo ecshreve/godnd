@@ -21,3 +21,24 @@ type apiSkill struct {
 	Url          string       `json:"url"`
 }
 
+// generated response type for api/proficiencies/{index}
+type apiProficiency struct {
+	Index      string         `json:"index"`
+	Type       string         `json:"type"`
+	Name       string         `json:"name"`
+	Classes    []APIReference `json:"classes"`
+	Races      []APIReference `json:"races"`
+	Url        string         `json:"url"`
+	References []APIReference `json:"references"`
+}
+
+// generated response type for api/languages/{index}
+type apiLanguage struct {
+	Index           string   `json:"index"`
+	Name            string   `json:"name"`
+	Type            string   `json:"type"`
+	TypicalSpeakers []string `json:"typical_speakers"`
+	Script          string   `json:"script"`
+	Url             string   `json:"url"`
+}
+
