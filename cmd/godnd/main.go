@@ -4,18 +4,15 @@ import (
 	"context"
 	"log"
 
-	"github.com/davecgh/go-spew/spew"
-	"github.com/ecshreve/godnd/pkg/client"
+	"github.com/ecshreve/godnd/pkg/api"
+	"github.com/kr/pretty"
 )
 
 func main() {
-	ctx := context.Background()
-	scs := spew.ConfigState{Indent: "\t"}
-
-	c := client.NewClient()
-	res, err := c.GetAllDamageTypes(ctx)
+	cc := api.NewClient()
+	r, err := cc.GetAbilityScoreByIndex(context.Background(), "cha")
 	if err != nil {
-		log.Fatalf("bloop: %+v", err)
+		log.Fatal(err)
 	}
-	scs.Dump(res)
+	pretty.Print(r)
 }
