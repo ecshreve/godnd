@@ -11,6 +11,10 @@ func main() {
 		"proficiencies",
 		"languages",
 		"classes",
+		"conditions",
+		"damage-types",
+		"magic-schools",
+		"equipment-categories",
 	}
 	genny.GenerateTypes(toGen)
 }

@@ -122,3 +122,34 @@ type apiSpellsForClassAndLevel struct {
 	Results []APIReference `json:"results"`
 }
 
+// generated response type for api/conditions/{index}
+type apiCondition struct {
+	Index string   `json:"index"`
+	Name  string   `json:"name"`
+	Desc  []string `json:"desc"`
+	Url   string   `json:"url"`
+}
+
+// generated response type for api/damage-types/{index}
+type apiDamageType struct {
+	Index string   `json:"index"`
+	Name  string   `json:"name"`
+	Desc  []string `json:"desc"`
+	Url   string   `json:"url"`
+}
+
+// generated response type for api/magic-schools/{index}
+type apiMagicSchool struct {
+	Index string `json:"index"`
+	Name  string `json:"name"`
+	Desc  string `json:"desc"`
+	Url   string `json:"url"`
+}
+
+// generated response type for api/equipment-categories/{index}
+type apiEquipmentCategory struct {
+	Index     string         `json:"index"`
+	Name      string         `json:"name"`
+	Equipment []APIReference `json:"equipment"`
+}
+
