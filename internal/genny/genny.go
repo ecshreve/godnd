@@ -132,7 +132,12 @@ func parseFieldType(elem string) string {
 		fieldType = fmt.Sprintf("URLRefString")
 	}
 
+	// TODO: figure out how to handle the spells object returned from the
+	// subclasses endpoint so we don't use an empty interface.
 	if regexp.MustCompile(`list`).MatchString(elem) {
+		if fieldType == "" {
+			fieldType = fmt.Sprintf("interface{}")
+		}
 		fieldType = fmt.Sprintf("[]%s", fieldType)
 	}
 

@@ -249,3 +249,73 @@ type apiTraitsForRace struct {
 	Results []APIReference `json:"results"`
 }
 
+// generated response type for api/subraces/{index}
+type apiSubrace struct {
+	Index          int32          `json:"index"`
+	Name           string         `json:"name"`
+	Race           APIReference   `json:"race"`
+	Desc           string         `json:"desc"`
+	AbilityBonuses []AbilityBonus `json:"ability_bonuses"`
+	Languages      []APIReference `json:"languages"`
+	Traits         []APIReference `json:"traits"`
+	Url            string         `json:"url"`
+}
+
+// generated response type for api/subraces/{index}/traits/
+type apiTraitsForSubrace struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/subraces/{index}/proficiencies/
+type apiProficienciesForSubrace struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/subclasses/{index}
+type apiSubclass struct {
+	Index          string        `json:"index"`
+	Class          APIReference  `json:"class"`
+	Name           string        `json:"name"`
+	SubclassFlavor string        `json:"subclass_flavor"`
+	Desc           string        `json:"desc"`
+	Spells         []interface{} `json:"spells"`
+	SubclassLevels APIReference  `json:"subclass_levels"`
+	Url            string        `json:"url"`
+}
+
+// generated response type for api/subclasses/{index}/features/
+type apiFeaturesForSubclass struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/subclasses/{index}/levels/
+type apiLevelsForSubclass struct {
+	Level          int32          `json:"level"`
+	FeatureChoices []APIReference `json:"feature_choices"`
+	Features       []APIReference `json:"features"`
+	Class          APIReference   `json:"class"`
+	Subclass       APIReference   `json:"subclass"`
+	Url            string         `json:"url"`
+	Index          string         `json:"index"`
+}
+
+// generated response type for api/subclasses/{index}/levels/{integer 1-20}
+type apiLevelForSubclass struct {
+	Level          int32          `json:"level"`
+	FeatureChoices []APIReference `json:"feature_choices"`
+	Features       []APIReference `json:"features"`
+	Classe         APIReference   `json:"classe"`
+	Subclass       APIReference   `json:"subclass"`
+	Url            string         `json:"url"`
+	Index          string         `json:"index"`
+}
+
+// generated response type for api/subclasses/{index}/levels/{integer 1-20}/features
+type apiFeaturesForSubclassAndLevel struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+

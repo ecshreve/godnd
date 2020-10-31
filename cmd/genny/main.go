@@ -20,6 +20,8 @@ func main() {
 		"magic-items",
 		// "monsters", this doc includes information on the filter query params, need to handle it
 		"races",
+		"subraces",
+		"subclasses",
 	}
 	genny.GenerateTypes(toGen)
 }
