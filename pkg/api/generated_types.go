@@ -319,3 +319,23 @@ type apiFeaturesForSubclassAndLevel struct {
 	Results []APIReference `json:"results"`
 }
 
+// generated response type for api/traits/{index}
+type apiTrait struct {
+	Index              int32          `json:"index"`
+	Races              []APIReference `json:"races"`
+	Subraces           []APIReference `json:"subraces"`
+	Name               string         `json:"name"`
+	Desc               []string       `json:"desc"`
+	Proficiencies      []APIReference `json:"proficiencies"`
+	ProficiencyChoices []Choice       `json:"proficiency_choices"`
+	Url                string         `json:"url"`
+}
+
+// generated response type for api/weapon-properties/{index}
+type apiWeaponProperty struct {
+	Index int32    `json:"index"`
+	Name  string   `json:"name"`
+	Desc  []string `json:"desc"`
+	Url   string   `json:"url"`
+}
+

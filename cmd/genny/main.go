@@ -22,6 +22,8 @@ func main() {
 		"races",
 		"subraces",
 		"subclasses",
+		"traits",
+		"weapon-properties",
 	}
 	genny.GenerateTypes(toGen)
 }
