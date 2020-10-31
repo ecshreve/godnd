@@ -10,6 +10,7 @@ func main() {
 		"skills",
 		"proficiencies",
 		"languages",
+		"classes",
 	}
 	genny.GenerateTypes(toGen)
 }

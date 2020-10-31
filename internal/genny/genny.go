@@ -102,13 +102,19 @@ func parseTableRow(row string) string {
 
 func parseFieldType(elem string) string {
 	fieldType := ""
-	if regexp.MustCompile(`APIReference`).MatchString(elem) {
+	if regexp.MustCompile(`object`).MatchString(elem) {
+		fieldType = fmt.Sprintf("map[string]interface{}")
+	} else if regexp.MustCompile(`APIReference`).MatchString(elem) {
 		fieldType = fmt.Sprintf("APIReference")
 	} else if regexp.MustCompile(`Choice`).MatchString(elem) {
 		fieldType = fmt.Sprintf("Choice")
 	} else {
 		scalar := regexp.MustCompile(`\S+$`).FindString(elem)
 		fieldType = fmt.Sprintf("%s", apiScalarToGoScalar[scalar])
+	}
+
+	if fieldType == "" && regexp.MustCompile(`(?s).*string.+`).MatchString(elem) {
+		fieldType = fmt.Sprintf("string")
 	}
 
 	if regexp.MustCompile(`list`).MatchString(elem) {

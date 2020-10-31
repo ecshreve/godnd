@@ -42,6 +42,11 @@ func TestParseFieldType(t *testing.T) {
 			input:    `\n\t\t list <a href="#apireference">APIReference</a> (<a href="#skills">Skills</a>)`,
 			expected: "[]APIReference",
 		},
+		{
+			desc:     "string api url reference to another type",
+			input:    `\t\t\t\tstring (<a href="#starting-equipment">StartingEquipment</a>)\t\t\t`,
+			expected: "string",
+		},
 	}
 
 	for _, testcase := range testcases {
