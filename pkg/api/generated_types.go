@@ -153,3 +153,55 @@ type apiEquipmentCategory struct {
 	Equipment []APIReference `json:"equipment"`
 }
 
+// generated response type for api/equipment/{index}
+type apiWeapon struct {
+	Index             string                 `json:"index"`
+	Name              string                 `json:"name"`
+	EquipmentCategory APIReference           `json:"equipment_category"`
+	WeaponCategory    string                 `json:"weapon_category"`
+	WeaponRange       string                 `json:"weapon_range"`
+	CategoryRange     string                 `json:"category_range"`
+	Cost              Cost                   `json:"cost"`
+	Damage            map[string]interface{} `json:"damage"`
+	Range             map[string]interface{} `json:"range"`
+	Weight            int32                  `json:"weight"`
+	Properties        []APIReference         `json:"properties"`
+	Url               string                 `json:"url"`
+}
+
+// generated response type for api/equipment/{index}
+type apiArmor struct {
+	Index               string                 `json:"index"`
+	Name                string                 `json:"name"`
+	EquipmentCategory   APIReference           `json:"equipment_category"`
+	ArmorCategory       string                 `json:"armor_category"`
+	ArmorClass          map[string]interface{} `json:"armor_class"`
+	StrMinimum          int32                  `json:"str_minimum"`
+	StealthDisadvantage bool                   `json:"stealth_disadvantage"`
+	Weight              int32                  `json:"weight"`
+	Cost                Cost                   `json:"cost"`
+	Url                 string                 `json:"url"`
+}
+
+// generated response type for api/equipment/{index}
+type apiGear struct {
+	Index             string       `json:"index"`
+	Name              string       `json:"name"`
+	EquipmentCategory APIReference `json:"equipment_category"`
+	GearCategory      APIReference `json:"gear_category"`
+	Cost              Cost         `json:"cost"`
+	Weight            int32        `json:"weight"`
+	Url               string       `json:"url"`
+}
+
+// generated response type for api/equipment/{index}
+type apiEquipmentPack struct {
+	Index             string         `json:"index"`
+	Name              string         `json:"name"`
+	EquipmentCategory APIReference   `json:"equipment_category"`
+	GearCategory      APIReference   `json:"gear_category"`
+	Cost              Cost           `json:"cost"`
+	Contents          []APIReference `json:"contents"`
+	Url               string         `json:"url"`
+}
+

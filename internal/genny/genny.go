@@ -55,8 +55,8 @@ func parseResourceFile(resourceName string) ([]endpointForGen, error) {
 }
 
 func parseEndpoints(fullDoc string) []endpointForGen {
-	fullEndpointRe := regexp.MustCompile(`(?s)<h3>.*?</h3>.*?<table>(\s|.)*?</table>`)
-	endpointRefRe := regexp.MustCompile(`<h3>.*? (.*?)</h3>`)
+	fullEndpointRe := regexp.MustCompile(`(?s)<h3.*?>.*?</h3>.*?<table>(\s|.)*?</table>`)
+	endpointRefRe := regexp.MustCompile(`<h3.*?>.*? (.*?)</h3>`)
 	allRawEndpoints := fullEndpointRe.FindAllString(fullDoc, -1)
 
 	var parsedEndpoints []endpointForGen
@@ -75,7 +75,7 @@ func parseEndpoint(endpointStr string) string {
 }
 
 func parseTable(table string) string {
-	tableTitleRe := regexp.MustCompile(`<h4>(.*?)</h4>`)
+	tableTitleRe := regexp.MustCompile(`<h4>(.*?)</h4>\s*<table>`)
 	tableTitle := tableTitleRe.FindStringSubmatch(table)[1]
 	typeName := spaceSepToCamel(tableTitle)
 
@@ -117,6 +117,8 @@ func parseFieldType(elem string) string {
 		fieldType = fmt.Sprintf("APIReference")
 	} else if regexp.MustCompile(`Choice`).MatchString(elem) {
 		fieldType = fmt.Sprintf("Choice")
+	} else if regexp.MustCompile(`Cost`).MatchString(elem) {
+		fieldType = fmt.Sprintf("Cost")
 	} else {
 		scalar := regexp.MustCompile(`\S+$`).FindString(elem)
 		fieldType = fmt.Sprintf("%s", apiScalarToGoScalar[scalar])

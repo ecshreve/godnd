@@ -15,6 +15,7 @@ func main() {
 		"damage-types",
 		"magic-schools",
 		"equipment-categories",
+		"equipment",
 	}
 	genny.GenerateTypes(toGen)
 }

@@ -41,6 +41,7 @@ var resourceToEndpoint = map[string]string{
 var apiScalarToGoScalar = map[string]string{
 	"string":  "string",
 	"integer": "int32",
+	"boolean": "bool",
 }
 
 func snakeToCamel(s string) string {
