@@ -205,3 +205,47 @@ type apiEquipmentPack struct {
 	Url               string         `json:"url"`
 }
 
+// generated response type for api/magic-items/{index}
+type apiMagicItem struct {
+	Index             string       `json:"index"`
+	Name              string       `json:"name"`
+	EquipmentCategory APIReference `json:"equipment_category"`
+	Desc              []string     `json:"desc"`
+}
+
+// generated response type for api/races/{index}
+type apiRaces struct {
+	Index                 string         `json:"index"`
+	Name                  string         `json:"name"`
+	Speed                 int32          `json:"speed"`
+	AbilityBonuses        []AbilityBonus `json:"ability_bonuses"`
+	Alignment             string         `json:"alignment"`
+	Age                   string         `json:"age"`
+	Size                  string         `json:"size"`
+	SizeDescription       string         `json:"size_description"`
+	StartingProficiencies []APIReference `json:"starting_proficiencies"`
+	Languages             []APIReference `json:"languages"`
+	LanguageDesc          string         `json:"language_desc"`
+	Traits                []APIReference `json:"traits"`
+	Subraces              APIReference   `json:"subraces"`
+	Url                   string         `json:"url"`
+}
+
+// generated response type for api/races/{index}/subraces/
+type apiSubracesForRace struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/races/{index}/proficiencies/
+type apiProficienciesForRace struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/races/{index}/traits/
+type apiTraitsForRace struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+

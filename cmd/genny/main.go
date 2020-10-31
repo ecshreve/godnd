@@ -16,6 +16,10 @@ func main() {
 		"magic-schools",
 		"equipment-categories",
 		"equipment",
+		// "features", type name collision with something from the `conditions` endpoint
+		"magic-items",
+		// "monsters", this doc includes information on the filter query params, need to handle it
+		"races",
 	}
 	genny.GenerateTypes(toGen)
 }

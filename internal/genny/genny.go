@@ -88,8 +88,10 @@ func parseTable(table string) string {
 	}
 	fields := strings.Join(parsedRows, "\n")
 
+	// TODO: add error handling
 	typeStr := fmt.Sprintf("type api%s struct {\n%s\n}", typeName, fields)
 	formattedTypeStr, _ := format.Source([]byte(typeStr))
+
 	return string(formattedTypeStr)
 }
 
@@ -119,6 +121,8 @@ func parseFieldType(elem string) string {
 		fieldType = fmt.Sprintf("Choice")
 	} else if regexp.MustCompile(`Cost`).MatchString(elem) {
 		fieldType = fmt.Sprintf("Cost")
+	} else if regexp.MustCompile(`AbilityBonus`).MatchString(elem) {
+		fieldType = fmt.Sprintf("AbilityBonus")
 	} else {
 		scalar := regexp.MustCompile(`\S+$`).FindString(elem)
 		fieldType = fmt.Sprintf("%s", apiScalarToGoScalar[scalar])
