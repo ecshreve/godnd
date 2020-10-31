@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/ecshreve/godnd/internal/genny"
 )
 
@@ -31,5 +33,9 @@ func main() {
 		"weapon-properties",
 	}
 
-	genny.GenerateTypes(toGen)
+	pathForGenFile := "/Users/ericshreve/github.com/godnd/pkg/api/generated_types.go"
+	err := genny.GenerateTypes(toGen, pathForGenFile)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
