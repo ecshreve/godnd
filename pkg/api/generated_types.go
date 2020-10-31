@@ -12,36 +12,6 @@ type apiAbilityScore struct {
 	Url      string         `json:"url"`
 }
 
-// generated response type for api/skills/{index}
-type apiSkill struct {
-	Index        string       `json:"index"`
-	Name         string       `json:"name"`
-	Desc         []string     `json:"desc"`
-	AbilityScore APIReference `json:"ability_score"`
-	Url          string       `json:"url"`
-}
-
-// generated response type for api/proficiencies/{index}
-type apiProficiency struct {
-	Index      string         `json:"index"`
-	Type       string         `json:"type"`
-	Name       string         `json:"name"`
-	Classes    []APIReference `json:"classes"`
-	Races      []APIReference `json:"races"`
-	Url        string         `json:"url"`
-	References []APIReference `json:"references"`
-}
-
-// generated response type for api/languages/{index}
-type apiLanguage struct {
-	Index           string   `json:"index"`
-	Name            string   `json:"name"`
-	Type            string   `json:"type"`
-	TypicalSpeakers []string `json:"typical_speakers"`
-	Script          string   `json:"script"`
-	Url             string   `json:"url"`
-}
-
 // generated response type for api/classes/{index}
 type apiClass struct {
 	Index              string         `json:"index"`
@@ -138,14 +108,6 @@ type apiDamageType struct {
 	Url   string   `json:"url"`
 }
 
-// generated response type for api/magic-schools/{index}
-type apiMagicSchool struct {
-	Index string `json:"index"`
-	Name  string `json:"name"`
-	Desc  string `json:"desc"`
-	Url   string `json:"url"`
-}
-
 // generated response type for api/equipment-categories/{index}
 type apiEquipmentCategory struct {
 	Index     string         `json:"index"`
@@ -205,12 +167,41 @@ type apiEquipmentPack struct {
 	Url               string         `json:"url"`
 }
 
+// generated response type for api/languages/{index}
+type apiLanguage struct {
+	Index           string   `json:"index"`
+	Name            string   `json:"name"`
+	Type            string   `json:"type"`
+	TypicalSpeakers []string `json:"typical_speakers"`
+	Script          string   `json:"script"`
+	Url             string   `json:"url"`
+}
+
 // generated response type for api/magic-items/{index}
 type apiMagicItem struct {
 	Index             string       `json:"index"`
 	Name              string       `json:"name"`
 	EquipmentCategory APIReference `json:"equipment_category"`
 	Desc              []string     `json:"desc"`
+}
+
+// generated response type for api/magic-schools/{index}
+type apiMagicSchool struct {
+	Index string `json:"index"`
+	Name  string `json:"name"`
+	Desc  string `json:"desc"`
+	Url   string `json:"url"`
+}
+
+// generated response type for api/proficiencies/{index}
+type apiProficiency struct {
+	Index      string         `json:"index"`
+	Type       string         `json:"type"`
+	Name       string         `json:"name"`
+	Classes    []APIReference `json:"classes"`
+	Races      []APIReference `json:"races"`
+	Url        string         `json:"url"`
+	References []APIReference `json:"references"`
 }
 
 // generated response type for api/races/{index}
@@ -249,28 +240,13 @@ type apiTraitsForRace struct {
 	Results []APIReference `json:"results"`
 }
 
-// generated response type for api/subraces/{index}
-type apiSubrace struct {
-	Index          int32          `json:"index"`
-	Name           string         `json:"name"`
-	Race           APIReference   `json:"race"`
-	Desc           string         `json:"desc"`
-	AbilityBonuses []AbilityBonus `json:"ability_bonuses"`
-	Languages      []APIReference `json:"languages"`
-	Traits         []APIReference `json:"traits"`
-	Url            string         `json:"url"`
-}
-
-// generated response type for api/subraces/{index}/traits/
-type apiTraitsForSubrace struct {
-	Count   int32          `json:"count"`
-	Results []APIReference `json:"results"`
-}
-
-// generated response type for api/subraces/{index}/proficiencies/
-type apiProficienciesForSubrace struct {
-	Count   int32          `json:"count"`
-	Results []APIReference `json:"results"`
+// generated response type for api/skills/{index}
+type apiSkill struct {
+	Index        string       `json:"index"`
+	Name         string       `json:"name"`
+	Desc         []string     `json:"desc"`
+	AbilityScore APIReference `json:"ability_score"`
+	Url          string       `json:"url"`
 }
 
 // generated response type for api/subclasses/{index}
@@ -315,6 +291,30 @@ type apiLevelForSubclass struct {
 
 // generated response type for api/subclasses/{index}/levels/{integer 1-20}/features
 type apiFeaturesForSubclassAndLevel struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/subraces/{index}
+type apiSubrace struct {
+	Index          int32          `json:"index"`
+	Name           string         `json:"name"`
+	Race           APIReference   `json:"race"`
+	Desc           string         `json:"desc"`
+	AbilityBonuses []AbilityBonus `json:"ability_bonuses"`
+	Languages      []APIReference `json:"languages"`
+	Traits         []APIReference `json:"traits"`
+	Url            string         `json:"url"`
+}
+
+// generated response type for api/subraces/{index}/traits/
+type apiTraitsForSubrace struct {
+	Count   int32          `json:"count"`
+	Results []APIReference `json:"results"`
+}
+
+// generated response type for api/subraces/{index}/proficiencies/
+type apiProficienciesForSubrace struct {
 	Count   int32          `json:"count"`
 	Results []APIReference `json:"results"`
 }

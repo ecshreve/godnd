@@ -7,23 +7,29 @@ import (
 func main() {
 	toGen := []string{
 		"ability-scores",
-		"skills",
-		"proficiencies",
-		"languages",
 		"classes",
 		"conditions",
 		"damage-types",
-		"magic-schools",
 		"equipment-categories",
 		"equipment",
 		// "features", type name collision with something from the `conditions` endpoint
+		"languages",
 		"magic-items",
+		"magic-schools",
 		// "monsters", this doc includes information on the filter query params, need to handle it
+		"proficiencies",
 		"races",
-		"subraces",
+		// "rules",
+		// "rule-sections",
+		"skills",
+		// "spellcasting",
+		// "spells",
+		// "starting-equipment",
 		"subclasses",
+		"subraces",
 		"traits",
 		"weapon-properties",
 	}
+
 	genny.GenerateTypes(toGen)
 }
