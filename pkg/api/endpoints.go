@@ -1,41 +1,33 @@
 package api
 
-import (
-	"context"
-	"fmt"
-	"net/http"
+// func (c *Client) GetAbilityScores(ctx context.Context) (*ResourceList, error) {
+// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/ability-scores", c.BaseURL), nil)
+// 	if err != nil {
+// 		return nil, oops.Wrapf(err, "unable to build request")
+// 	}
 
-	"github.com/samsarahq/go/oops"
-)
+// 	req = req.WithContext(ctx)
 
-func (c *Client) GetAbilityScores(ctx context.Context) (*ResourceList, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/ability-scores", c.BaseURL), nil)
-	if err != nil {
-		return nil, oops.Wrapf(err, "unable to build request")
-	}
+// 	res := ResourceList{}
+// 	if err := c.sendRequest(req, &res); err != nil {
+// 		return nil, oops.Wrapf(err, "unable to get ability-scores")
+// 	}
 
-	req = req.WithContext(ctx)
+// 	return &res, nil
+// }
 
-	res := ResourceList{}
-	if err := c.sendRequest(req, &res); err != nil {
-		return nil, oops.Wrapf(err, "unable to get ability-scores")
-	}
+// func (c *Client) GetAbilityScoreByIndex(ctx context.Context, index string) (*apiAbilityScore, error) {
+// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/ability-scores/%s", c.BaseURL, index), nil)
+// 	if err != nil {
+// 		return nil, oops.Wrapf(err, "unable to build request")
+// 	}
 
-	return &res, nil
-}
+// 	req = req.WithContext(ctx)
 
-func (c *Client) GetAbilityScoreByIndex(ctx context.Context, index string) (*apiAbilityScore, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/ability-scores/%s", c.BaseURL, index), nil)
-	if err != nil {
-		return nil, oops.Wrapf(err, "unable to build request")
-	}
+// 	res := apiAbilityScore{}
+// 	if err := c.sendRequest(req, &res); err != nil {
+// 		return nil, oops.Wrapf(err, "unable to get ability score")
+// 	}
 
-	req = req.WithContext(ctx)
-
-	res := apiAbilityScore{}
-	if err := c.sendRequest(req, &res); err != nil {
-		return nil, oops.Wrapf(err, "unable to get ability score")
-	}
-
-	return &res, nil
-}
+// 	return &res, nil
+// }

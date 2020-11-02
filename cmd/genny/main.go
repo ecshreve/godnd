@@ -37,7 +37,7 @@ func main() {
 	}
 
 	pathForGenFile := "/Users/ericshreve/github.com/godnd/pkg/api/generated_types.go"
-	err := genny.GenerateTypesV2(ctx, toGen, pathForGenFile)
+	err := genny.GenerateTypes(ctx, toGen, pathForGenFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
