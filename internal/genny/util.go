@@ -2,7 +2,13 @@ package genny
 
 import (
 	"bytes"
+	"context"
+	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
+
+	"github.com/samsarahq/go/oops"
 )
 
 // DocFilePath is the file path to the directory containing the ejs files that
@@ -11,6 +17,7 @@ import (
 // TODO: this should be updated to automatically pull the latest version of these
 // files form the main repo.
 const DocFilePath = "/Users/ericshreve/github.com/godnd/resources/partials"
+const DocFilePathV2 = "/Users/ericshreve/github.com/godnd/resources"
 
 var resourceToEndpoint = map[string]string{
 	"ability-scores":       "/api/ability-scores",
@@ -68,4 +75,20 @@ func spaceSepToCamel(s string) string {
 	}
 
 	return string(buffer)
+}
+
+func dumpResourceFileToString(ctx context.Context, resourceName string) (string, error) {
+	docFilePath := fmt.Sprintf("%s/doc-resource-%s.ejs", DocFilePathV2, resourceName)
+	docFile, err := os.Open(docFilePath)
+	if err != nil {
+		return "", oops.Wrapf(err, "error opening doc file for resource: %s with path: %s", resourceName, docFilePath)
+	}
+
+	b, err := ioutil.ReadAll(docFile)
+	if err != nil {
+		return "", oops.Wrapf(err, "error reading doc file for resource: %s", resourceName)
+	}
+	rawStr := string(b)
+
+	return rawStr, nil
 }

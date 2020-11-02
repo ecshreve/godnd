@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseFieldType(t *testing.T) {
+func TestParseFieldTypeOLD(t *testing.T) {
 	testcases := []struct {
 		desc     string
 		input    string
@@ -51,7 +51,7 @@ func TestParseFieldType(t *testing.T) {
 
 	for _, testcase := range testcases {
 		t.Run(testcase.desc, func(t *testing.T) {
-			actual := parseFieldType(testcase.input)
+			actual := parseFieldTypeOLD(testcase.input)
 			assert.Equal(t, testcase.expected, actual)
 		})
 	}

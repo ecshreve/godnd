@@ -1,6 +1,7 @@
 package genny
 
 import (
+	"context"
 	"fmt"
 	"go/format"
 	"io/ioutil"
@@ -17,12 +18,31 @@ type endpointForGen struct {
 	typeString string
 }
 
+type apiResource struct {
+	name            string
+	docFilePath     *string
+	urlSuffix       *string
+	goTypeStrForGen *string
+}
+
+func GenerateTypesV2(ctx context.Context, resourceNames []string) error {
+	for _, resourceName := range resourceNames {
+		rawResFileStr, err := dumpResourceFileToString(ctx, resourceName)
+		if err != nil {
+			return oops.Wrapf(err, "unable to dump resource file for %s", resourceName)
+		}
+
+		fmt.Println(rawResFileStr)
+	}
+	return nil
+}
+
 // GenerateTypes takes a slice of API resource strings and generates Go types in
 // a new file at the given path. It returns an error if unable to create the file.
 //
 // Note: it does not return an error if unable to generate a type for one of the
 // resources, rather it logs the error and continues.
-func GenerateTypes(resourceRefs []string, genFilePath string) error {
+func GenerateTypes(ctx context.Context, resourceRefs []string, genFilePath string) error {
 	f, err := os.Create(genFilePath)
 	if err != nil {
 		return oops.Wrapf(err, "unable to create generated_types.go file")
@@ -115,14 +135,14 @@ func parseTableRow(row string) string {
 	fieldName := snakeToCamel(fieldNameRaw)
 
 	fieldTypeRaw := elemContentsRe.FindStringSubmatch(rowElements[2])[1]
-	fieldType := parseFieldType(fieldTypeRaw)
+	fieldType := parseFieldTypeOLD(fieldTypeRaw)
 
 	parsed := fmt.Sprintf("%s %s `json:\"%s\"`", fieldName, fieldType, fieldNameRaw)
 
 	return parsed
 }
 
-func parseFieldType(elem string) string {
+func parseFieldTypeOLD(elem string) string {
 	fieldType := ""
 	if regexp.MustCompile(`object`).MatchString(elem) {
 		fieldType = fmt.Sprintf("map[string]interface{}")
