@@ -1,18 +1,13 @@
 package main
 
-import (
-	"context"
-	"log"
-
-	"github.com/ecshreve/godnd/pkg/api"
-	"github.com/kr/pretty"
-)
+import "fmt"
 
 func main() {
-	cc := api.NewClient()
-	r, err := cc.GetAbilityScoreByIndex(context.Background(), "cha")
-	if err != nil {
-		log.Fatal(err)
-	}
-	pretty.Print(r)
+	// cc := api.NewClient()
+	// r, err := cc.GetAbilityScoreByIndex(context.Background(), "cha")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// pretty.Print(r)
+	fmt.Println("hello godnd")
 }

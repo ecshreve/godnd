@@ -10,7 +10,7 @@ import (
 	"github.com/samsarahq/go/oops"
 )
 
-func GenerateTypesV2(ctx context.Context, resourceNames []string, genFilePath string) error {
+func GenerateTypes(ctx context.Context, resourceNames []string, genFilePath string) error {
 	f, err := os.Create(genFilePath)
 	if err != nil {
 		return oops.Wrapf(err, "unable to create generated_types.go file")
