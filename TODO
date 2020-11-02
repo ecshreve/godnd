@@ -1,6 +1,7 @@
 ✔ fix iteration through endpoints @done(20-10-30 23:38)
     in the main generate function we iterate through a map so the results are not
     deterministic, it would be nice if the generated file was
+☐ add more tests for new genny regexhelpers
 ☐ figure out how to add binary files to .gitignore
 ☐ figure out flow for downloading the doc files on the fly
 ☐ generate api calls from the generated types

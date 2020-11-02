@@ -297,14 +297,15 @@ type apiFeaturesForSubclassAndLevel struct {
 
 // generated response type for api/subraces/{index}
 type apiSubrace struct {
-	Index          int32          `json:"index"`
-	Name           string         `json:"name"`
-	Race           APIReference   `json:"race"`
-	Desc           string         `json:"desc"`
-	AbilityBonuses []AbilityBonus `json:"ability_bonuses"`
-	Languages      []APIReference `json:"languages"`
-	Traits         []APIReference `json:"traits"`
-	Url            string         `json:"url"`
+	Index                 int32          `json:"index"`
+	Name                  string         `json:"name"`
+	Race                  APIReference   `json:"race"`
+	Desc                  string         `json:"desc"`
+	AbilityBonuses        []AbilityBonus `json:"ability_bonuses"`
+	StartingProficiencies []APIReference `json:"starting_proficiencies"`
+	Languages             []APIReference `json:"languages"`
+	Traits                []APIReference `json:"traits"`
+	Url                   string         `json:"url"`
 }
 
 // generated response type for api/subraces/{index}/traits/

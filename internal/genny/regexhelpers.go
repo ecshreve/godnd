@@ -77,8 +77,8 @@ func getTableRowElements(ctx context.Context, tableRow string) ([]string, error)
 }
 
 type tableRowElementContents struct {
-	fieldNameRaw string
-	fieldTypeRaw string
+	FieldNameRaw string
+	FieldTypeRaw string
 }
 
 func getTableRowElementContents(ctx context.Context, rowElements []string) (*tableRowElementContents, error) {
@@ -99,8 +99,8 @@ func getTableRowElementContents(ctx context.Context, rowElements []string) (*tab
 	}
 
 	return &tableRowElementContents{
-		fieldNameRaw: fieldNameRawMatches[1],
-		fieldTypeRaw: fieldTypeRawMatches[1],
+		FieldNameRaw: fieldNameRawMatches[1],
+		FieldTypeRaw: fieldTypeRawMatches[1],
 	}, nil
 }
 
@@ -121,10 +121,14 @@ func parseFieldType(ctx context.Context, fieldTypeRaw string) (string, error) {
 			parsedFieldType = "URLRefString"
 		} else if regexp.MustCompile("object").MatchString(fieldTypeRaw) {
 			parsedFieldType = "map[string]interface{}"
-		} else if scalar := regexp.MustCompile(`[[:alpha:]]+$`).FindString(fieldTypeRaw); scalar != "" {
-			parsedFieldType = apiScalarToGoScalar[scalar]
 		} else {
-			parsedFieldType = "interface{}"
+			scalar := regexp.MustCompile(`[[:alpha:]]+$`).FindString(fieldTypeRaw)
+			parsedFieldType = apiScalarToGoScalar[scalar]
+
+			// TODO: this is gross find a better way
+			if parsedFieldType == "" {
+				parsedFieldType = "interface{}"
+			}
 		}
 	}
 
