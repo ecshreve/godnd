@@ -16,4 +16,5 @@ func main() {
 		log.Fatal(err)
 	}
 	pretty.Print(r)
+	pretty.Print("hi")
 }
