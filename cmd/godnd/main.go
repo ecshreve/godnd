@@ -19,6 +19,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	pretty.Print(r)
-	pretty.Print("hi")
 }

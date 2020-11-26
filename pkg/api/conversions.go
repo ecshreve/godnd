@@ -8,6 +8,30 @@ func (a *apiCondition) convert() *Condition {
 	}
 }
 
+func (a *apiDamageType) convert() *DamageType {
+	return &DamageType{
+		Index:       a.Index,
+		Name:        a.Name,
+		Description: a.Desc,
+	}
+}
+
+func (a *apiMagicSchool) convert() *MagicSchool {
+	return &MagicSchool{
+		Index:       a.Index,
+		Name:        a.Name,
+		Description: a.Desc,
+	}
+}
+
+func (a *apiWeaponProperty) convert() *WeaponProperty {
+	return &WeaponProperty{
+		Index:       a.Index,
+		Name:        a.Name,
+		Description: a.Desc,
+	}
+}
+
 func (a *apiAbilityScore) convert() *AbilityScore {
 	var skillIndices []string
 	for _, skill := range a.Skills {

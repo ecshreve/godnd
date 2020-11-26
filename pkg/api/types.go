@@ -1,12 +1,29 @@
 package api
 
-type BasicResource struct {
+type Condition struct {
 	Index       string
 	Name        string
 	Description []string
 }
 
-type Condition BasicResource
+type DamageType struct {
+	Index       string
+	Name        string
+	Description []string
+}
+
+type MagicSchool struct {
+	Index       string
+	Name        string
+	Description string
+}
+
+// THIS IS WRONG
+type WeaponProperty struct {
+	Index       int32
+	Name        string
+	Description []string
+}
 
 type AbilityScore struct {
 	Index        string
