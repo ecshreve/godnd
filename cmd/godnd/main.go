@@ -10,8 +10,12 @@ import (
 
 func main() {
 	cc := api.NewClient()
-	//r, err := cc.ConditionByIndex(context.Background(), "blinded")
-	r, err := cc.ConditionAll(context.Background())
+	ctx := context.Background()
+	r, err := cc.ConditionByIndex(ctx, "blinded")
+	//r, err := cc.ConditionAll(context.Background())
+	//r, err := cc.AbilityScoreByIndex(ctx, "str")
+	//r, err := cc.AbilityScoreAll(ctx)
+
 	if err != nil {
 		log.Fatal(err)
 	}

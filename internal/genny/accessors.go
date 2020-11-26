@@ -22,6 +22,11 @@ var accessorsToGen = []*AccessorParams{
 		APITypeName:  "apiCondition",
 		ResourceName: "conditions",
 	},
+	{
+		GoTypeName:   "AbilityScore",
+		APITypeName:  "apiAbilityScore",
+		ResourceName: "ability-scores",
+	},
 }
 
 func GenerateAccessors(ctx context.Context, genFilePath string) error {
