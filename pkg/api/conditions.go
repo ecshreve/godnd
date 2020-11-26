@@ -2,11 +2,16 @@ package api
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"github.com/samsarahq/go/oops"
 )
+
+type ResourceInterface interface {
+}
+
+type Resource struct {
+	EndpointName string
+}
 
 type Condition struct {
 	Name        string
@@ -24,23 +29,13 @@ func getConditionFromAPICondition(a *apiCondition) *Condition {
 	}
 }
 
-func (c *Client) ConditionsAll(ctx context.Context) ([]*Condition, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%sconditions", c.BaseURL), nil)
+func (c *Client) ConditionAll(ctx context.Context) ([]*Condition, error) {
+	res, err := allHelper(ctx, c, "conditions")
 	if err != nil {
-		return nil, oops.Wrapf(err, "unable to build request for resource list: %s", "conditions")
-	}
-	req = req.WithContext(ctx)
-
-	res := ResourceList{}
-	if err := c.sendRequest(req, &res); err != nil {
-		return nil, oops.Wrapf(err, "unable to get resource list: %s", "conditions")
+		return nil, oops.Wrapf(err, "unable to get resource list for conditions")
 	}
 
-	if len(res.Resources) == 0 {
-		return nil, oops.Errorf("zero items returned for resource list: %s", "conditions")
-	}
-
-	var resList []*Condition
+	resList := []*Condition{}
 	for _, resource := range res.Resources {
 		parsedRes, err := c.ConditionByIndex(ctx, resource.Index)
 		if err != nil {
@@ -53,17 +48,10 @@ func (c *Client) ConditionsAll(ctx context.Context) ([]*Condition, error) {
 }
 
 func (c *Client) ConditionByIndex(ctx context.Context, index string) (*Condition, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%sconditions/%s", c.BaseURL, index), nil)
-	if err != nil {
-		return nil, oops.Wrapf(err, "unable to build request for resource: %s and index: %s", "conditions", index)
-	}
-	req = req.WithContext(ctx)
-
 	res := apiCondition{}
-	if err := c.sendRequest(req, &res); err != nil {
+	if err := byIndexHelper(ctx, c, &res, "conditions", index); err != nil {
 		return nil, oops.Wrapf(err, "unable to get resource: %s with index: %s", "conditions", index)
 	}
 
-	parsedRes := getConditionFromAPICondition(&res)
-	return parsedRes, nil
+	return getConditionFromAPICondition(&res), nil
 }
