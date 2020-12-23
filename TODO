@@ -2,7 +2,7 @@
     in the main generate function we iterate through a map so the results are not
     deterministic, it would be nice if the generated file was
 ☐ add more tests for new genny regexhelpers
-☐ figure out how to add binary files to .gitignore
+✔ figure out how to add binary files to .gitignore @done(20-12-22 19:04)
 ☐ figure out flow for downloading the doc files on the fly
 ☐ generate api calls from the generated types
 ☐ add more details to readme
