@@ -4,12 +4,7 @@
   cmd = "go run -mod=mod cmd/client/main.go"
 
 [[task]]
-  id = "server"
-  type = "short"
-  cmd = "go run -mod=mod cmd/server/main.go"
-
-[[task]]
-  id = "gen"
+  id = "gen-all"
   type = "short"
   dependencies = ["gen-server", "gen-client"]
 
@@ -22,3 +17,8 @@
   id = "gen-client"
   type = "short"
   cmd = "oapi-codegen --config=configs/client.cfg.yml openapi-spec.yml"
+
+[[task]]
+  id = "clean"
+  type = "short"
+  cmd = "rm -rf internal/server/generated internal/client/generated"

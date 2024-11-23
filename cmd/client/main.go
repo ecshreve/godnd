@@ -15,7 +15,7 @@ func main() {
 		panic(err)
 	}
 
-	res, err := cl.GetAPIAbilityScoresIndexWithResponse(context.Background(), "cha")
+	res, err := cl.GetAPIAbilityScoresIndexWithResponse(context.Background(), client.GetAPIAbilityScoresIndexParamsIndex(""))
 	if err != nil {
 		panic(err)
 	}

@@ -1,9 +1,9 @@
+# NOT A PRIORITY
+# This is a placeholder for now, the client generation is more interesting.
 package: server
 output: internal/server/generated/server.gen.go
 generate:
   gin-server: true
-  embedded-spec: true
-  strict-server: true
   models: true
 compatibility:
   always-prefix-enum-values: true
