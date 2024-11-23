@@ -1,6 +1,3 @@
 bin/
 .vscode/
-
-# ignore these files as they're just used to generate from
-
-resources/
+.env
