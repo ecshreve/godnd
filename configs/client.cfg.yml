@@ -1,4 +1,11 @@
-package: api
-output: internal/api/generated/client.gen.go
+package: client
+output: internal/client/generated/client.gen.go
 generate:
   client: true
+  models: true
+compatibility:
+  always-prefix-enum-values: true
+  disable-required-readonly-as-pointer: true
+output-options:
+  skip-prune: true
+  name-normalizer: ToCamelCaseWithInitialisms

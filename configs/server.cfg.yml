@@ -1,6 +1,11 @@
-package: api
-output: internal/api/generated/server.gen.go
+package: server
+output: internal/server/generated/server.gen.go
 generate:
-  chi-server: true
+  gin-server: true
   embedded-spec: true
   strict-server: true
+  models: true
+compatibility:
+  always-prefix-enum-values: true
+output-options:
+  name-normalizer: ToCamelCaseWithInitialisms

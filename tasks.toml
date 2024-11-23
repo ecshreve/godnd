@@ -1,12 +1,17 @@
 [[task]]
-  id = "gen"
+  id = "client"
   type = "short"
-  dependencies = ["gen-models", "gen-server", "gen-client"]
+  cmd = "go run -mod=mod cmd/client/main.go"
 
 [[task]]
-  id = "gen-models"
+  id = "server"
   type = "short"
-  cmd = "oapi-codegen --config=configs/models.cfg.yml openapi-spec.yml"
+  cmd = "go run -mod=mod cmd/server/main.go"
+
+[[task]]
+  id = "gen"
+  type = "short"
+  dependencies = ["gen-server", "gen-client"]
 
 [[task]]
   id = "gen-server"
