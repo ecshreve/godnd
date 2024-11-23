@@ -2102,6 +2102,7 @@ components:
         example: ammunition
     class-level:
       name: class_level
+      x-go-name: ClassLevelParam
       in: path
       required: true
       schema:
@@ -3549,8 +3550,6 @@ components:
             trait_specific:
               description: Information specific to this trait
               oneOf:
-                - $ref: '#/components/schemas/Choice'
-                - $ref: '#/components/schemas/Choice'
                 - type: object
                   properties:
                     damage-type:

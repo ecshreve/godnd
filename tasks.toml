@@ -1,0 +1,19 @@
+[[task]]
+  id = "gen"
+  type = "short"
+  dependencies = ["gen-models", "gen-server", "gen-client"]
+
+[[task]]
+  id = "gen-models"
+  type = "short"
+  cmd = "oapi-codegen --config=configs/models.cfg.yml spec/openapi.yml"
+
+[[task]]
+  id = "gen-server"
+  type = "short"
+  cmd = "oapi-codegen --config=configs/server.cfg.yml spec/openapi.yml"
+
+[[task]]
+  id = "gen-client"
+  type = "short"
+  cmd = "oapi-codegen --config=configs/client.cfg.yml spec/openapi.yml"

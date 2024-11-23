@@ -1,0 +1,6 @@
+package: api
+output: generated/server.gen.go
+generate:
+  gin-server: true
+  embedded-spec: true
+  strict-server: true
