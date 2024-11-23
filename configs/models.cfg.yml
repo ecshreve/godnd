@@ -1,4 +1,4 @@
 package: api
-output: generated/models.gen.go
+output: internal/api/generated/models.gen.go
 generate:
   models: true

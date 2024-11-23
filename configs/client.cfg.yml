@@ -1,4 +1,4 @@
 package: api
-output: generated/client.gen.go
+output: internal/api/generated/client.gen.go
 generate:
   client: true
