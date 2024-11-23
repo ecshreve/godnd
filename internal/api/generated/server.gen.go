@@ -16,309 +16,601 @@ import (
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
-	strictgin "github.com/oapi-codegen/runtime/strictmiddleware/gin"
+	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Get all resource URLs.
 	// (GET /api)
-	GetApi(c *gin.Context)
+	GetApi(w http.ResponseWriter, r *http.Request)
 	// Get an ability score by index.
 	// (GET /api/ability-scores/{index})
-	GetApiAbilityScoresIndex(c *gin.Context, index GetApiAbilityScoresIndexParamsIndex)
+	GetApiAbilityScoresIndex(w http.ResponseWriter, r *http.Request, index GetApiAbilityScoresIndexParamsIndex)
 	// Get an alignment by index.
 	// (GET /api/alignments/{index})
-	GetApiAlignmentsIndex(c *gin.Context, index GetApiAlignmentsIndexParamsIndex)
+	GetApiAlignmentsIndex(w http.ResponseWriter, r *http.Request, index GetApiAlignmentsIndexParamsIndex)
 	// Get a background by index.
 	// (GET /api/backgrounds/{index})
-	GetApiBackgroundsIndex(c *gin.Context, index GetApiBackgroundsIndexParamsIndex)
+	GetApiBackgroundsIndex(w http.ResponseWriter, r *http.Request, index GetApiBackgroundsIndexParamsIndex)
 	// Get a class by index.
 	// (GET /api/classes/{index})
-	GetApiClassesIndex(c *gin.Context, index GetApiClassesIndexParamsIndex)
+	GetApiClassesIndex(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexParamsIndex)
 	// Get features available for a class.
 	// (GET /api/classes/{index}/features)
-	GetApiClassesIndexFeatures(c *gin.Context, index GetApiClassesIndexFeaturesParamsIndex)
+	GetApiClassesIndexFeatures(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexFeaturesParamsIndex)
 	// Get all level resources for a class.
 	// (GET /api/classes/{index}/levels)
-	GetApiClassesIndexLevels(c *gin.Context, index GetApiClassesIndexLevelsParamsIndex, params GetApiClassesIndexLevelsParams)
+	GetApiClassesIndexLevels(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsParamsIndex, params GetApiClassesIndexLevelsParams)
 	// Get level resource for a class and level.
 	// (GET /api/classes/{index}/levels/{class_level})
-	GetApiClassesIndexLevelsClassLevel(c *gin.Context, index GetApiClassesIndexLevelsClassLevelParamsIndex, classLevelParam ClassLevelParam)
+	GetApiClassesIndexLevelsClassLevel(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsClassLevelParamsIndex, classLevelParam ClassLevelParam)
 	// Get features available to a class at the requested level.
 	// (GET /api/classes/{index}/levels/{class_level}/features)
-	GetApiClassesIndexLevelsClassLevelFeatures(c *gin.Context, index GetApiClassesIndexLevelsClassLevelFeaturesParamsIndex, classLevelParam ClassLevelParam)
+	GetApiClassesIndexLevelsClassLevelFeatures(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsClassLevelFeaturesParamsIndex, classLevelParam ClassLevelParam)
 	// Get spells of the requested level available to the class.
 	// (GET /api/classes/{index}/levels/{spell_level}/spells)
-	GetApiClassesIndexLevelsSpellLevelSpells(c *gin.Context, index GetApiClassesIndexLevelsSpellLevelSpellsParamsIndex, spellLevel SpellLevel)
+	GetApiClassesIndexLevelsSpellLevelSpells(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsSpellLevelSpellsParamsIndex, spellLevel SpellLevel)
 	// Get multiclassing resource for a class.
 	// (GET /api/classes/{index}/multi-classing)
-	GetApiClassesIndexMultiClassing(c *gin.Context, index GetApiClassesIndexMultiClassingParamsIndex)
+	GetApiClassesIndexMultiClassing(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexMultiClassingParamsIndex)
 	// Get proficiencies available for a class.
 	// (GET /api/classes/{index}/proficiencies)
-	GetApiClassesIndexProficiencies(c *gin.Context, index GetApiClassesIndexProficienciesParamsIndex)
+	GetApiClassesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexProficienciesParamsIndex)
 	// Get spellcasting info for a class.
 	// (GET /api/classes/{index}/spellcasting)
-	GetApiClassesIndexSpellcasting(c *gin.Context, index GetApiClassesIndexSpellcastingParamsIndex)
+	GetApiClassesIndexSpellcasting(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSpellcastingParamsIndex)
 	// Get spells available for a class.
 	// (GET /api/classes/{index}/spells)
-	GetApiClassesIndexSpells(c *gin.Context, index GetApiClassesIndexSpellsParamsIndex)
+	GetApiClassesIndexSpells(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSpellsParamsIndex)
 	// Get subclasses available for a class.
 	// (GET /api/classes/{index}/subclasses)
-	GetApiClassesIndexSubclasses(c *gin.Context, index GetApiClassesIndexSubclassesParamsIndex)
+	GetApiClassesIndexSubclasses(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSubclassesParamsIndex)
 	// Get a condition by index.
 	// (GET /api/conditions/{index})
-	GetApiConditionsIndex(c *gin.Context, index GetApiConditionsIndexParamsIndex)
+	GetApiConditionsIndex(w http.ResponseWriter, r *http.Request, index GetApiConditionsIndexParamsIndex)
 	// Get a damage type by index.
 	// (GET /api/damage-types/{index})
-	GetApiDamageTypesIndex(c *gin.Context, index GetApiDamageTypesIndexParamsIndex)
+	GetApiDamageTypesIndex(w http.ResponseWriter, r *http.Request, index GetApiDamageTypesIndexParamsIndex)
 	// Get an equipment category by index.
 	// (GET /api/equipment-categories/{index})
-	GetApiEquipmentCategoriesIndex(c *gin.Context, index string)
+	GetApiEquipmentCategoriesIndex(w http.ResponseWriter, r *http.Request, index string)
 	// Get an equipment item by index.
 	// (GET /api/equipment/{index})
-	GetApiEquipmentIndex(c *gin.Context, index EquipmentIndex)
+	GetApiEquipmentIndex(w http.ResponseWriter, r *http.Request, index EquipmentIndex)
 	// Get a feat by index.
 	// (GET /api/feats/{index})
-	GetApiFeatsIndex(c *gin.Context, index GetApiFeatsIndexParamsIndex)
+	GetApiFeatsIndex(w http.ResponseWriter, r *http.Request, index GetApiFeatsIndexParamsIndex)
 	// Get a feature by index.
 	// (GET /api/features/{index})
-	GetApiFeaturesIndex(c *gin.Context, index FeatureIndex)
+	GetApiFeaturesIndex(w http.ResponseWriter, r *http.Request, index FeatureIndex)
 	// Get a language by index.
 	// (GET /api/languages/{index})
-	GetApiLanguagesIndex(c *gin.Context, index GetApiLanguagesIndexParamsIndex)
+	GetApiLanguagesIndex(w http.ResponseWriter, r *http.Request, index GetApiLanguagesIndexParamsIndex)
 	// Get a magic item by index.
 	// (GET /api/magic-items/{index})
-	GetApiMagicItemsIndex(c *gin.Context, index string)
+	GetApiMagicItemsIndex(w http.ResponseWriter, r *http.Request, index string)
 	// Get a magic school by index.
 	// (GET /api/magic-schools/{index})
-	GetApiMagicSchoolsIndex(c *gin.Context, index GetApiMagicSchoolsIndexParamsIndex)
+	GetApiMagicSchoolsIndex(w http.ResponseWriter, r *http.Request, index GetApiMagicSchoolsIndexParamsIndex)
 	// Get list of monsters with optional filtering
 	// (GET /api/monsters)
-	GetApiMonsters(c *gin.Context, params GetApiMonstersParams)
+	GetApiMonsters(w http.ResponseWriter, r *http.Request, params GetApiMonstersParams)
 	// Get monster by index.
 	// (GET /api/monsters/{index})
-	GetApiMonstersIndex(c *gin.Context, index MonsterIndex)
+	GetApiMonstersIndex(w http.ResponseWriter, r *http.Request, index MonsterIndex)
 	// Get a proficiency by index.
 	// (GET /api/proficiencies/{index})
-	GetApiProficienciesIndex(c *gin.Context, index ProficiencyIndex)
+	GetApiProficienciesIndex(w http.ResponseWriter, r *http.Request, index ProficiencyIndex)
 	// Get a race by index.
 	// (GET /api/races/{index})
-	GetApiRacesIndex(c *gin.Context, index GetApiRacesIndexParamsIndex)
+	GetApiRacesIndex(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexParamsIndex)
 	// Get proficiencies available for a race.
 	// (GET /api/races/{index}/proficiencies)
-	GetApiRacesIndexProficiencies(c *gin.Context, index GetApiRacesIndexProficienciesParamsIndex)
+	GetApiRacesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexProficienciesParamsIndex)
 	// Get subraces available for a race.
 	// (GET /api/races/{index}/subraces)
-	GetApiRacesIndexSubraces(c *gin.Context, index GetApiRacesIndexSubracesParamsIndex)
+	GetApiRacesIndexSubraces(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexSubracesParamsIndex)
 	// Get traits available for a race.
 	// (GET /api/races/{index}/traits)
-	GetApiRacesIndexTraits(c *gin.Context, index GetApiRacesIndexTraitsParamsIndex)
+	GetApiRacesIndexTraits(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexTraitsParamsIndex)
 	// Get a rule section by index.
 	// (GET /api/rule-sections/{index})
-	GetApiRuleSectionsIndex(c *gin.Context, index GetApiRuleSectionsIndexParamsIndex)
+	GetApiRuleSectionsIndex(w http.ResponseWriter, r *http.Request, index GetApiRuleSectionsIndexParamsIndex)
 	// Get a rule by index.
 	// (GET /api/rules/{index})
-	GetApiRulesIndex(c *gin.Context, index GetApiRulesIndexParamsIndex)
+	GetApiRulesIndex(w http.ResponseWriter, r *http.Request, index GetApiRulesIndexParamsIndex)
 	// Get a skill by index.
 	// (GET /api/skills/{index})
-	GetApiSkillsIndex(c *gin.Context, index GetApiSkillsIndexParamsIndex)
+	GetApiSkillsIndex(w http.ResponseWriter, r *http.Request, index GetApiSkillsIndexParamsIndex)
 	// Get list of spells with optional filtering.
 	// (GET /api/spells)
-	GetApiSpells(c *gin.Context, params GetApiSpellsParams)
+	GetApiSpells(w http.ResponseWriter, r *http.Request, params GetApiSpellsParams)
 	// Get a spell by index.
 	// (GET /api/spells/{index})
-	GetApiSpellsIndex(c *gin.Context, index SpellIndex)
+	GetApiSpellsIndex(w http.ResponseWriter, r *http.Request, index SpellIndex)
 	// Get a subclass by index.
 	// (GET /api/subclasses/{index})
-	GetApiSubclassesIndex(c *gin.Context, index GetApiSubclassesIndexParamsIndex)
+	GetApiSubclassesIndex(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexParamsIndex)
 	// Get features available for a subclass.
 	// (GET /api/subclasses/{index}/features)
-	GetApiSubclassesIndexFeatures(c *gin.Context, index GetApiSubclassesIndexFeaturesParamsIndex)
+	GetApiSubclassesIndexFeatures(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexFeaturesParamsIndex)
 	// Get all level resources for a subclass.
 	// (GET /api/subclasses/{index}/levels)
-	GetApiSubclassesIndexLevels(c *gin.Context, index GetApiSubclassesIndexLevelsParamsIndex)
+	GetApiSubclassesIndexLevels(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsParamsIndex)
 	// Get level resources for a subclass and level.
 	// (GET /api/subclasses/{index}/levels/{subclass_level})
-	GetApiSubclassesIndexLevelsSubclassLevel(c *gin.Context, index GetApiSubclassesIndexLevelsSubclassLevelParamsIndex, subclassLevel int)
+	GetApiSubclassesIndexLevelsSubclassLevel(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsSubclassLevelParamsIndex, subclassLevel int)
 	// Get features of the requested spell level available to the class.
 	// (GET /api/subclasses/{index}/levels/{subclass_level}/features)
-	GetApiSubclassesIndexLevelsSubclassLevelFeatures(c *gin.Context, index GetApiSubclassesIndexLevelsSubclassLevelFeaturesParamsIndex, subclassLevel int)
+	GetApiSubclassesIndexLevelsSubclassLevelFeatures(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsSubclassLevelFeaturesParamsIndex, subclassLevel int)
 	// Get a subrace by index.
 	// (GET /api/subraces/{index})
-	GetApiSubracesIndex(c *gin.Context, index GetApiSubracesIndexParamsIndex)
+	GetApiSubracesIndex(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexParamsIndex)
 	// Get proficiences available for a subrace.
 	// (GET /api/subraces/{index}/proficiencies)
-	GetApiSubracesIndexProficiencies(c *gin.Context, index GetApiSubracesIndexProficienciesParamsIndex)
+	GetApiSubracesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexProficienciesParamsIndex)
 	// Get traits available for a subrace.
 	// (GET /api/subraces/{index}/traits)
-	GetApiSubracesIndexTraits(c *gin.Context, index GetApiSubracesIndexTraitsParamsIndex)
+	GetApiSubracesIndexTraits(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexTraitsParamsIndex)
 	// Get a trait by index.
 	// (GET /api/traits/{index})
-	GetApiTraitsIndex(c *gin.Context, index GetApiTraitsIndexParamsIndex)
+	GetApiTraitsIndex(w http.ResponseWriter, r *http.Request, index GetApiTraitsIndexParamsIndex)
 	// Get a weapon property by index.
 	// (GET /api/weapon-properties/{index})
-	GetApiWeaponPropertiesIndex(c *gin.Context, index GetApiWeaponPropertiesIndexParamsIndex)
+	GetApiWeaponPropertiesIndex(w http.ResponseWriter, r *http.Request, index GetApiWeaponPropertiesIndexParamsIndex)
 	// Get list of all available resources for an endpoint.
 	// (GET /api/{endpoint})
-	GetApiEndpoint(c *gin.Context, endpoint GetApiEndpointParamsEndpoint)
+	GetApiEndpoint(w http.ResponseWriter, r *http.Request, endpoint GetApiEndpointParamsEndpoint)
+}
+
+// Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
+
+type Unimplemented struct{}
+
+// Get all resource URLs.
+// (GET /api)
+func (_ Unimplemented) GetApi(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an ability score by index.
+// (GET /api/ability-scores/{index})
+func (_ Unimplemented) GetApiAbilityScoresIndex(w http.ResponseWriter, r *http.Request, index GetApiAbilityScoresIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an alignment by index.
+// (GET /api/alignments/{index})
+func (_ Unimplemented) GetApiAlignmentsIndex(w http.ResponseWriter, r *http.Request, index GetApiAlignmentsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a background by index.
+// (GET /api/backgrounds/{index})
+func (_ Unimplemented) GetApiBackgroundsIndex(w http.ResponseWriter, r *http.Request, index GetApiBackgroundsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a class by index.
+// (GET /api/classes/{index})
+func (_ Unimplemented) GetApiClassesIndex(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get features available for a class.
+// (GET /api/classes/{index}/features)
+func (_ Unimplemented) GetApiClassesIndexFeatures(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexFeaturesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all level resources for a class.
+// (GET /api/classes/{index}/levels)
+func (_ Unimplemented) GetApiClassesIndexLevels(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsParamsIndex, params GetApiClassesIndexLevelsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get level resource for a class and level.
+// (GET /api/classes/{index}/levels/{class_level})
+func (_ Unimplemented) GetApiClassesIndexLevelsClassLevel(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsClassLevelParamsIndex, classLevelParam ClassLevelParam) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get features available to a class at the requested level.
+// (GET /api/classes/{index}/levels/{class_level}/features)
+func (_ Unimplemented) GetApiClassesIndexLevelsClassLevelFeatures(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsClassLevelFeaturesParamsIndex, classLevelParam ClassLevelParam) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get spells of the requested level available to the class.
+// (GET /api/classes/{index}/levels/{spell_level}/spells)
+func (_ Unimplemented) GetApiClassesIndexLevelsSpellLevelSpells(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsSpellLevelSpellsParamsIndex, spellLevel SpellLevel) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get multiclassing resource for a class.
+// (GET /api/classes/{index}/multi-classing)
+func (_ Unimplemented) GetApiClassesIndexMultiClassing(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexMultiClassingParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get proficiencies available for a class.
+// (GET /api/classes/{index}/proficiencies)
+func (_ Unimplemented) GetApiClassesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexProficienciesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get spellcasting info for a class.
+// (GET /api/classes/{index}/spellcasting)
+func (_ Unimplemented) GetApiClassesIndexSpellcasting(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSpellcastingParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get spells available for a class.
+// (GET /api/classes/{index}/spells)
+func (_ Unimplemented) GetApiClassesIndexSpells(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSpellsParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get subclasses available for a class.
+// (GET /api/classes/{index}/subclasses)
+func (_ Unimplemented) GetApiClassesIndexSubclasses(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSubclassesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a condition by index.
+// (GET /api/conditions/{index})
+func (_ Unimplemented) GetApiConditionsIndex(w http.ResponseWriter, r *http.Request, index GetApiConditionsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a damage type by index.
+// (GET /api/damage-types/{index})
+func (_ Unimplemented) GetApiDamageTypesIndex(w http.ResponseWriter, r *http.Request, index GetApiDamageTypesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an equipment category by index.
+// (GET /api/equipment-categories/{index})
+func (_ Unimplemented) GetApiEquipmentCategoriesIndex(w http.ResponseWriter, r *http.Request, index string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get an equipment item by index.
+// (GET /api/equipment/{index})
+func (_ Unimplemented) GetApiEquipmentIndex(w http.ResponseWriter, r *http.Request, index EquipmentIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a feat by index.
+// (GET /api/feats/{index})
+func (_ Unimplemented) GetApiFeatsIndex(w http.ResponseWriter, r *http.Request, index GetApiFeatsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a feature by index.
+// (GET /api/features/{index})
+func (_ Unimplemented) GetApiFeaturesIndex(w http.ResponseWriter, r *http.Request, index FeatureIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a language by index.
+// (GET /api/languages/{index})
+func (_ Unimplemented) GetApiLanguagesIndex(w http.ResponseWriter, r *http.Request, index GetApiLanguagesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a magic item by index.
+// (GET /api/magic-items/{index})
+func (_ Unimplemented) GetApiMagicItemsIndex(w http.ResponseWriter, r *http.Request, index string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a magic school by index.
+// (GET /api/magic-schools/{index})
+func (_ Unimplemented) GetApiMagicSchoolsIndex(w http.ResponseWriter, r *http.Request, index GetApiMagicSchoolsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get list of monsters with optional filtering
+// (GET /api/monsters)
+func (_ Unimplemented) GetApiMonsters(w http.ResponseWriter, r *http.Request, params GetApiMonstersParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get monster by index.
+// (GET /api/monsters/{index})
+func (_ Unimplemented) GetApiMonstersIndex(w http.ResponseWriter, r *http.Request, index MonsterIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a proficiency by index.
+// (GET /api/proficiencies/{index})
+func (_ Unimplemented) GetApiProficienciesIndex(w http.ResponseWriter, r *http.Request, index ProficiencyIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a race by index.
+// (GET /api/races/{index})
+func (_ Unimplemented) GetApiRacesIndex(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get proficiencies available for a race.
+// (GET /api/races/{index}/proficiencies)
+func (_ Unimplemented) GetApiRacesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexProficienciesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get subraces available for a race.
+// (GET /api/races/{index}/subraces)
+func (_ Unimplemented) GetApiRacesIndexSubraces(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexSubracesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get traits available for a race.
+// (GET /api/races/{index}/traits)
+func (_ Unimplemented) GetApiRacesIndexTraits(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexTraitsParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a rule section by index.
+// (GET /api/rule-sections/{index})
+func (_ Unimplemented) GetApiRuleSectionsIndex(w http.ResponseWriter, r *http.Request, index GetApiRuleSectionsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a rule by index.
+// (GET /api/rules/{index})
+func (_ Unimplemented) GetApiRulesIndex(w http.ResponseWriter, r *http.Request, index GetApiRulesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a skill by index.
+// (GET /api/skills/{index})
+func (_ Unimplemented) GetApiSkillsIndex(w http.ResponseWriter, r *http.Request, index GetApiSkillsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get list of spells with optional filtering.
+// (GET /api/spells)
+func (_ Unimplemented) GetApiSpells(w http.ResponseWriter, r *http.Request, params GetApiSpellsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a spell by index.
+// (GET /api/spells/{index})
+func (_ Unimplemented) GetApiSpellsIndex(w http.ResponseWriter, r *http.Request, index SpellIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a subclass by index.
+// (GET /api/subclasses/{index})
+func (_ Unimplemented) GetApiSubclassesIndex(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get features available for a subclass.
+// (GET /api/subclasses/{index}/features)
+func (_ Unimplemented) GetApiSubclassesIndexFeatures(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexFeaturesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get all level resources for a subclass.
+// (GET /api/subclasses/{index}/levels)
+func (_ Unimplemented) GetApiSubclassesIndexLevels(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get level resources for a subclass and level.
+// (GET /api/subclasses/{index}/levels/{subclass_level})
+func (_ Unimplemented) GetApiSubclassesIndexLevelsSubclassLevel(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsSubclassLevelParamsIndex, subclassLevel int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get features of the requested spell level available to the class.
+// (GET /api/subclasses/{index}/levels/{subclass_level}/features)
+func (_ Unimplemented) GetApiSubclassesIndexLevelsSubclassLevelFeatures(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsSubclassLevelFeaturesParamsIndex, subclassLevel int) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a subrace by index.
+// (GET /api/subraces/{index})
+func (_ Unimplemented) GetApiSubracesIndex(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get proficiences available for a subrace.
+// (GET /api/subraces/{index}/proficiencies)
+func (_ Unimplemented) GetApiSubracesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexProficienciesParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get traits available for a subrace.
+// (GET /api/subraces/{index}/traits)
+func (_ Unimplemented) GetApiSubracesIndexTraits(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexTraitsParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a trait by index.
+// (GET /api/traits/{index})
+func (_ Unimplemented) GetApiTraitsIndex(w http.ResponseWriter, r *http.Request, index GetApiTraitsIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get a weapon property by index.
+// (GET /api/weapon-properties/{index})
+func (_ Unimplemented) GetApiWeaponPropertiesIndex(w http.ResponseWriter, r *http.Request, index GetApiWeaponPropertiesIndexParamsIndex) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Get list of all available resources for an endpoint.
+// (GET /api/{endpoint})
+func (_ Unimplemented) GetApiEndpoint(w http.ResponseWriter, r *http.Request, endpoint GetApiEndpointParamsEndpoint) {
+	w.WriteHeader(http.StatusNotImplemented)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler            ServerInterface
 	HandlerMiddlewares []MiddlewareFunc
-	ErrorHandler       func(*gin.Context, error, int)
+	ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
 }
 
-type MiddlewareFunc func(c *gin.Context)
+type MiddlewareFunc func(http.Handler) http.Handler
 
 // GetApi operation middleware
-func (siw *ServerInterfaceWrapper) GetApi(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApi(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApi(w, r)
+	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApi(c)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiAbilityScoresIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiAbilityScoresIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiAbilityScoresIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiAbilityScoresIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiAbilityScoresIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiAbilityScoresIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiAlignmentsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiAlignmentsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiAlignmentsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiAlignmentsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiAlignmentsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiAlignmentsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiBackgroundsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiBackgroundsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiBackgroundsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiBackgroundsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiBackgroundsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiBackgroundsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexFeatures operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexFeatures(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexFeatures(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexFeaturesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexFeatures(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexFeatures(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexLevels operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevels(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevels(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexLevelsParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
@@ -327,459 +619,477 @@ func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevels(c *gin.Context) {
 
 	// ------------- Optional query parameter "subclass" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "subclass", c.Request.URL.Query(), &params.Subclass)
+	err = runtime.BindQueryParameter("form", true, false, "subclass", r.URL.Query(), &params.Subclass)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter subclass: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "subclass", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexLevels(w, r, index, params)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexLevels(c, index, params)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexLevelsClassLevel operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevelsClassLevel(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevelsClassLevel(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexLevelsClassLevelParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
 	// ------------- Path parameter "class_level" -------------
 	var classLevelParam ClassLevelParam
 
-	err = runtime.BindStyledParameterWithOptions("simple", "class_level", c.Param("class_level"), &classLevelParam, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "class_level", chi.URLParam(r, "class_level"), &classLevelParam, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter class_level: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "class_level", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexLevelsClassLevel(w, r, index, classLevelParam)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexLevelsClassLevel(c, index, classLevelParam)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexLevelsClassLevelFeatures operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevelsClassLevelFeatures(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevelsClassLevelFeatures(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexLevelsClassLevelFeaturesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
 	// ------------- Path parameter "class_level" -------------
 	var classLevelParam ClassLevelParam
 
-	err = runtime.BindStyledParameterWithOptions("simple", "class_level", c.Param("class_level"), &classLevelParam, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "class_level", chi.URLParam(r, "class_level"), &classLevelParam, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter class_level: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "class_level", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexLevelsClassLevelFeatures(w, r, index, classLevelParam)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexLevelsClassLevelFeatures(c, index, classLevelParam)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexLevelsSpellLevelSpells operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevelsSpellLevelSpells(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexLevelsSpellLevelSpells(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexLevelsSpellLevelSpellsParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
 	// ------------- Path parameter "spell_level" -------------
 	var spellLevel SpellLevel
 
-	err = runtime.BindStyledParameterWithOptions("simple", "spell_level", c.Param("spell_level"), &spellLevel, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "spell_level", chi.URLParam(r, "spell_level"), &spellLevel, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter spell_level: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "spell_level", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexLevelsSpellLevelSpells(w, r, index, spellLevel)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexLevelsSpellLevelSpells(c, index, spellLevel)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexMultiClassing operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexMultiClassing(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexMultiClassing(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexMultiClassingParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexMultiClassing(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexMultiClassing(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexProficiencies operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexProficiencies(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexProficiencies(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexProficienciesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexProficiencies(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexProficiencies(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexSpellcasting operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexSpellcasting(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexSpellcasting(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexSpellcastingParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexSpellcasting(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexSpellcasting(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexSpells operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexSpells(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexSpells(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexSpellsParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexSpells(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexSpells(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiClassesIndexSubclasses operation middleware
-func (siw *ServerInterfaceWrapper) GetApiClassesIndexSubclasses(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiClassesIndexSubclasses(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiClassesIndexSubclassesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiClassesIndexSubclasses(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiClassesIndexSubclasses(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiConditionsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiConditionsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiConditionsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiConditionsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiConditionsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiConditionsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiDamageTypesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiDamageTypesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiDamageTypesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiDamageTypesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiDamageTypesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiDamageTypesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiEquipmentCategoriesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiEquipmentCategoriesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiEquipmentCategoriesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiEquipmentCategoriesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiEquipmentCategoriesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiEquipmentIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiEquipmentIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiEquipmentIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index EquipmentIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiEquipmentIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiEquipmentIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiFeatsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiFeatsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiFeatsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiFeatsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiFeatsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiFeatsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiFeaturesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiFeaturesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiFeaturesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index FeatureIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiFeaturesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiFeaturesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiLanguagesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiLanguagesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiLanguagesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiLanguagesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiLanguagesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiLanguagesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiMagicItemsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiMagicItemsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiMagicItemsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index string
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiMagicItemsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiMagicItemsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiMagicSchoolsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiMagicSchoolsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiMagicSchoolsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiMagicSchoolsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiMagicSchoolsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiMagicSchoolsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiMonsters operation middleware
-func (siw *ServerInterfaceWrapper) GetApiMonsters(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiMonsters(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -788,240 +1098,250 @@ func (siw *ServerInterfaceWrapper) GetApiMonsters(c *gin.Context) {
 
 	// ------------- Optional query parameter "challenge_rating" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "challenge_rating", c.Request.URL.Query(), &params.ChallengeRating)
+	err = runtime.BindQueryParameter("form", true, false, "challenge_rating", r.URL.Query(), &params.ChallengeRating)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter challenge_rating: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "challenge_rating", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiMonsters(w, r, params)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiMonsters(c, params)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiMonstersIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiMonstersIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiMonstersIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index MonsterIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiMonstersIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiMonstersIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiProficienciesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiProficienciesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiProficienciesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index ProficiencyIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiProficienciesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiProficienciesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiRacesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiRacesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiRacesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiRacesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRacesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiRacesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiRacesIndexProficiencies operation middleware
-func (siw *ServerInterfaceWrapper) GetApiRacesIndexProficiencies(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiRacesIndexProficiencies(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiRacesIndexProficienciesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRacesIndexProficiencies(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiRacesIndexProficiencies(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiRacesIndexSubraces operation middleware
-func (siw *ServerInterfaceWrapper) GetApiRacesIndexSubraces(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiRacesIndexSubraces(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiRacesIndexSubracesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRacesIndexSubraces(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiRacesIndexSubraces(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiRacesIndexTraits operation middleware
-func (siw *ServerInterfaceWrapper) GetApiRacesIndexTraits(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiRacesIndexTraits(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiRacesIndexTraitsParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRacesIndexTraits(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiRacesIndexTraits(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiRuleSectionsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiRuleSectionsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiRuleSectionsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiRuleSectionsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRuleSectionsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiRuleSectionsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiRulesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiRulesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiRulesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiRulesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiRulesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiRulesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSkillsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSkillsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSkillsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSkillsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSkillsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSkillsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSpells operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSpells(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSpells(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -1030,410 +1350,605 @@ func (siw *ServerInterfaceWrapper) GetApiSpells(c *gin.Context) {
 
 	// ------------- Optional query parameter "level" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "level", c.Request.URL.Query(), &params.Level)
+	err = runtime.BindQueryParameter("form", true, false, "level", r.URL.Query(), &params.Level)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter level: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "level", Err: err})
 		return
 	}
 
 	// ------------- Optional query parameter "school" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "school", c.Request.URL.Query(), &params.School)
+	err = runtime.BindQueryParameter("form", true, false, "school", r.URL.Query(), &params.School)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter school: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "school", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSpells(w, r, params)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSpells(c, params)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSpellsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSpellsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSpellsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index SpellIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSpellsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSpellsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubclassesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubclassesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubclassesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubclassesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubclassesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubclassesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubclassesIndexFeatures operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexFeatures(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexFeatures(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubclassesIndexFeaturesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubclassesIndexFeatures(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubclassesIndexFeatures(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubclassesIndexLevels operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexLevels(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexLevels(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubclassesIndexLevelsParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubclassesIndexLevels(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubclassesIndexLevels(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubclassesIndexLevelsSubclassLevel operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexLevelsSubclassLevel(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexLevelsSubclassLevel(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubclassesIndexLevelsSubclassLevelParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
 	// ------------- Path parameter "subclass_level" -------------
 	var subclassLevel int
 
-	err = runtime.BindStyledParameterWithOptions("simple", "subclass_level", c.Param("subclass_level"), &subclassLevel, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "subclass_level", chi.URLParam(r, "subclass_level"), &subclassLevel, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter subclass_level: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "subclass_level", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubclassesIndexLevelsSubclassLevel(w, r, index, subclassLevel)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubclassesIndexLevelsSubclassLevel(c, index, subclassLevel)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubclassesIndexLevelsSubclassLevelFeatures operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexLevelsSubclassLevelFeatures(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubclassesIndexLevelsSubclassLevelFeatures(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubclassesIndexLevelsSubclassLevelFeaturesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
 	// ------------- Path parameter "subclass_level" -------------
 	var subclassLevel int
 
-	err = runtime.BindStyledParameterWithOptions("simple", "subclass_level", c.Param("subclass_level"), &subclassLevel, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "subclass_level", chi.URLParam(r, "subclass_level"), &subclassLevel, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter subclass_level: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "subclass_level", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubclassesIndexLevelsSubclassLevelFeatures(w, r, index, subclassLevel)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubclassesIndexLevelsSubclassLevelFeatures(c, index, subclassLevel)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubracesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubracesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubracesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubracesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubracesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubracesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubracesIndexProficiencies operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubracesIndexProficiencies(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubracesIndexProficiencies(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubracesIndexProficienciesParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubracesIndexProficiencies(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubracesIndexProficiencies(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiSubracesIndexTraits operation middleware
-func (siw *ServerInterfaceWrapper) GetApiSubracesIndexTraits(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiSubracesIndexTraits(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiSubracesIndexTraitsParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiSubracesIndexTraits(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiSubracesIndexTraits(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiTraitsIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiTraitsIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiTraitsIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiTraitsIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiTraitsIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiTraitsIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiWeaponPropertiesIndex operation middleware
-func (siw *ServerInterfaceWrapper) GetApiWeaponPropertiesIndex(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiWeaponPropertiesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "index" -------------
 	var index GetApiWeaponPropertiesIndexParamsIndex
 
-	err = runtime.BindStyledParameterWithOptions("simple", "index", c.Param("index"), &index, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "index", chi.URLParam(r, "index"), &index, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter index: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "index", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiWeaponPropertiesIndex(w, r, index)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiWeaponPropertiesIndex(c, index)
+	handler.ServeHTTP(w, r)
 }
 
 // GetApiEndpoint operation middleware
-func (siw *ServerInterfaceWrapper) GetApiEndpoint(c *gin.Context) {
+func (siw *ServerInterfaceWrapper) GetApiEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
 	// ------------- Path parameter "endpoint" -------------
 	var endpoint GetApiEndpointParamsEndpoint
 
-	err = runtime.BindStyledParameterWithOptions("simple", "endpoint", c.Param("endpoint"), &endpoint, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "endpoint", chi.URLParam(r, "endpoint"), &endpoint, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter endpoint: %w", err), http.StatusBadRequest)
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "endpoint", Err: err})
 		return
 	}
 
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetApiEndpoint(w, r, endpoint)
+	}))
+
 	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
+		handler = middleware(handler)
 	}
 
-	siw.Handler.GetApiEndpoint(c, endpoint)
+	handler.ServeHTTP(w, r)
 }
 
-// GinServerOptions provides options for the Gin server.
-type GinServerOptions struct {
-	BaseURL      string
-	Middlewares  []MiddlewareFunc
-	ErrorHandler func(*gin.Context, error, int)
+type UnescapedCookieParamError struct {
+	ParamName string
+	Err       error
 }
 
-// RegisterHandlers creates http.Handler with routing matching OpenAPI spec.
-func RegisterHandlers(router gin.IRouter, si ServerInterface) {
-	RegisterHandlersWithOptions(router, si, GinServerOptions{})
+func (e *UnescapedCookieParamError) Error() string {
+	return fmt.Sprintf("error unescaping cookie parameter '%s'", e.ParamName)
 }
 
-// RegisterHandlersWithOptions creates http.Handler with additional options
-func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options GinServerOptions) {
-	errorHandler := options.ErrorHandler
-	if errorHandler == nil {
-		errorHandler = func(c *gin.Context, err error, statusCode int) {
-			c.JSON(statusCode, gin.H{"msg": err.Error()})
+func (e *UnescapedCookieParamError) Unwrap() error {
+	return e.Err
+}
+
+type UnmarshalingParamError struct {
+	ParamName string
+	Err       error
+}
+
+func (e *UnmarshalingParamError) Error() string {
+	return fmt.Sprintf("Error unmarshaling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+}
+
+func (e *UnmarshalingParamError) Unwrap() error {
+	return e.Err
+}
+
+type RequiredParamError struct {
+	ParamName string
+}
+
+func (e *RequiredParamError) Error() string {
+	return fmt.Sprintf("Query argument %s is required, but not found", e.ParamName)
+}
+
+type RequiredHeaderError struct {
+	ParamName string
+	Err       error
+}
+
+func (e *RequiredHeaderError) Error() string {
+	return fmt.Sprintf("Header parameter %s is required, but not found", e.ParamName)
+}
+
+func (e *RequiredHeaderError) Unwrap() error {
+	return e.Err
+}
+
+type InvalidParamFormatError struct {
+	ParamName string
+	Err       error
+}
+
+func (e *InvalidParamFormatError) Error() string {
+	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+}
+
+func (e *InvalidParamFormatError) Unwrap() error {
+	return e.Err
+}
+
+type TooManyValuesForParamError struct {
+	ParamName string
+	Count     int
+}
+
+func (e *TooManyValuesForParamError) Error() string {
+	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
+}
+
+// Handler creates http.Handler with routing matching OpenAPI spec.
+func Handler(si ServerInterface) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{})
+}
+
+type ChiServerOptions struct {
+	BaseURL          string
+	BaseRouter       chi.Router
+	Middlewares      []MiddlewareFunc
+	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
+}
+
+// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
+func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseRouter: r,
+	})
+}
+
+func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
+	return HandlerWithOptions(si, ChiServerOptions{
+		BaseURL:    baseURL,
+		BaseRouter: r,
+	})
+}
+
+// HandlerWithOptions creates http.Handler with additional options
+func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
+	r := options.BaseRouter
+
+	if r == nil {
+		r = chi.NewRouter()
+	}
+	if options.ErrorHandlerFunc == nil {
+		options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 	}
-
 	wrapper := ServerInterfaceWrapper{
 		Handler:            si,
 		HandlerMiddlewares: options.Middlewares,
-		ErrorHandler:       errorHandler,
+		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	router.GET(options.BaseURL+"/api", wrapper.GetApi)
-	router.GET(options.BaseURL+"/api/ability-scores/:index", wrapper.GetApiAbilityScoresIndex)
-	router.GET(options.BaseURL+"/api/alignments/:index", wrapper.GetApiAlignmentsIndex)
-	router.GET(options.BaseURL+"/api/backgrounds/:index", wrapper.GetApiBackgroundsIndex)
-	router.GET(options.BaseURL+"/api/classes/:index", wrapper.GetApiClassesIndex)
-	router.GET(options.BaseURL+"/api/classes/:index/features", wrapper.GetApiClassesIndexFeatures)
-	router.GET(options.BaseURL+"/api/classes/:index/levels", wrapper.GetApiClassesIndexLevels)
-	router.GET(options.BaseURL+"/api/classes/:index/levels/:class_level", wrapper.GetApiClassesIndexLevelsClassLevel)
-	router.GET(options.BaseURL+"/api/classes/:index/levels/:class_level/features", wrapper.GetApiClassesIndexLevelsClassLevelFeatures)
-	router.GET(options.BaseURL+"/api/classes/:index/levels/:spell_level/spells", wrapper.GetApiClassesIndexLevelsSpellLevelSpells)
-	router.GET(options.BaseURL+"/api/classes/:index/multi-classing", wrapper.GetApiClassesIndexMultiClassing)
-	router.GET(options.BaseURL+"/api/classes/:index/proficiencies", wrapper.GetApiClassesIndexProficiencies)
-	router.GET(options.BaseURL+"/api/classes/:index/spellcasting", wrapper.GetApiClassesIndexSpellcasting)
-	router.GET(options.BaseURL+"/api/classes/:index/spells", wrapper.GetApiClassesIndexSpells)
-	router.GET(options.BaseURL+"/api/classes/:index/subclasses", wrapper.GetApiClassesIndexSubclasses)
-	router.GET(options.BaseURL+"/api/conditions/:index", wrapper.GetApiConditionsIndex)
-	router.GET(options.BaseURL+"/api/damage-types/:index", wrapper.GetApiDamageTypesIndex)
-	router.GET(options.BaseURL+"/api/equipment-categories/:index", wrapper.GetApiEquipmentCategoriesIndex)
-	router.GET(options.BaseURL+"/api/equipment/:index", wrapper.GetApiEquipmentIndex)
-	router.GET(options.BaseURL+"/api/feats/:index", wrapper.GetApiFeatsIndex)
-	router.GET(options.BaseURL+"/api/features/:index", wrapper.GetApiFeaturesIndex)
-	router.GET(options.BaseURL+"/api/languages/:index", wrapper.GetApiLanguagesIndex)
-	router.GET(options.BaseURL+"/api/magic-items/:index", wrapper.GetApiMagicItemsIndex)
-	router.GET(options.BaseURL+"/api/magic-schools/:index", wrapper.GetApiMagicSchoolsIndex)
-	router.GET(options.BaseURL+"/api/monsters", wrapper.GetApiMonsters)
-	router.GET(options.BaseURL+"/api/monsters/:index", wrapper.GetApiMonstersIndex)
-	router.GET(options.BaseURL+"/api/proficiencies/:index", wrapper.GetApiProficienciesIndex)
-	router.GET(options.BaseURL+"/api/races/:index", wrapper.GetApiRacesIndex)
-	router.GET(options.BaseURL+"/api/races/:index/proficiencies", wrapper.GetApiRacesIndexProficiencies)
-	router.GET(options.BaseURL+"/api/races/:index/subraces", wrapper.GetApiRacesIndexSubraces)
-	router.GET(options.BaseURL+"/api/races/:index/traits", wrapper.GetApiRacesIndexTraits)
-	router.GET(options.BaseURL+"/api/rule-sections/:index", wrapper.GetApiRuleSectionsIndex)
-	router.GET(options.BaseURL+"/api/rules/:index", wrapper.GetApiRulesIndex)
-	router.GET(options.BaseURL+"/api/skills/:index", wrapper.GetApiSkillsIndex)
-	router.GET(options.BaseURL+"/api/spells", wrapper.GetApiSpells)
-	router.GET(options.BaseURL+"/api/spells/:index", wrapper.GetApiSpellsIndex)
-	router.GET(options.BaseURL+"/api/subclasses/:index", wrapper.GetApiSubclassesIndex)
-	router.GET(options.BaseURL+"/api/subclasses/:index/features", wrapper.GetApiSubclassesIndexFeatures)
-	router.GET(options.BaseURL+"/api/subclasses/:index/levels", wrapper.GetApiSubclassesIndexLevels)
-	router.GET(options.BaseURL+"/api/subclasses/:index/levels/:subclass_level", wrapper.GetApiSubclassesIndexLevelsSubclassLevel)
-	router.GET(options.BaseURL+"/api/subclasses/:index/levels/:subclass_level/features", wrapper.GetApiSubclassesIndexLevelsSubclassLevelFeatures)
-	router.GET(options.BaseURL+"/api/subraces/:index", wrapper.GetApiSubracesIndex)
-	router.GET(options.BaseURL+"/api/subraces/:index/proficiencies", wrapper.GetApiSubracesIndexProficiencies)
-	router.GET(options.BaseURL+"/api/subraces/:index/traits", wrapper.GetApiSubracesIndexTraits)
-	router.GET(options.BaseURL+"/api/traits/:index", wrapper.GetApiTraitsIndex)
-	router.GET(options.BaseURL+"/api/weapon-properties/:index", wrapper.GetApiWeaponPropertiesIndex)
-	router.GET(options.BaseURL+"/api/:endpoint", wrapper.GetApiEndpoint)
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api", wrapper.GetApi)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/ability-scores/{index}", wrapper.GetApiAbilityScoresIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/alignments/{index}", wrapper.GetApiAlignmentsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/backgrounds/{index}", wrapper.GetApiBackgroundsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}", wrapper.GetApiClassesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/features", wrapper.GetApiClassesIndexFeatures)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/levels", wrapper.GetApiClassesIndexLevels)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/levels/{class_level}", wrapper.GetApiClassesIndexLevelsClassLevel)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/levels/{class_level}/features", wrapper.GetApiClassesIndexLevelsClassLevelFeatures)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/levels/{spell_level}/spells", wrapper.GetApiClassesIndexLevelsSpellLevelSpells)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/multi-classing", wrapper.GetApiClassesIndexMultiClassing)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/proficiencies", wrapper.GetApiClassesIndexProficiencies)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/spellcasting", wrapper.GetApiClassesIndexSpellcasting)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/spells", wrapper.GetApiClassesIndexSpells)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/classes/{index}/subclasses", wrapper.GetApiClassesIndexSubclasses)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/conditions/{index}", wrapper.GetApiConditionsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/damage-types/{index}", wrapper.GetApiDamageTypesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/equipment-categories/{index}", wrapper.GetApiEquipmentCategoriesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/equipment/{index}", wrapper.GetApiEquipmentIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/feats/{index}", wrapper.GetApiFeatsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/features/{index}", wrapper.GetApiFeaturesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/languages/{index}", wrapper.GetApiLanguagesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/magic-items/{index}", wrapper.GetApiMagicItemsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/magic-schools/{index}", wrapper.GetApiMagicSchoolsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/monsters", wrapper.GetApiMonsters)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/monsters/{index}", wrapper.GetApiMonstersIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/proficiencies/{index}", wrapper.GetApiProficienciesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/races/{index}", wrapper.GetApiRacesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/races/{index}/proficiencies", wrapper.GetApiRacesIndexProficiencies)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/races/{index}/subraces", wrapper.GetApiRacesIndexSubraces)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/races/{index}/traits", wrapper.GetApiRacesIndexTraits)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/rule-sections/{index}", wrapper.GetApiRuleSectionsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/rules/{index}", wrapper.GetApiRulesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/skills/{index}", wrapper.GetApiSkillsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/spells", wrapper.GetApiSpells)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/spells/{index}", wrapper.GetApiSpellsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subclasses/{index}", wrapper.GetApiSubclassesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subclasses/{index}/features", wrapper.GetApiSubclassesIndexFeatures)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subclasses/{index}/levels", wrapper.GetApiSubclassesIndexLevels)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subclasses/{index}/levels/{subclass_level}", wrapper.GetApiSubclassesIndexLevelsSubclassLevel)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subclasses/{index}/levels/{subclass_level}/features", wrapper.GetApiSubclassesIndexLevelsSubclassLevelFeatures)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subraces/{index}", wrapper.GetApiSubracesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subraces/{index}/proficiencies", wrapper.GetApiSubracesIndexProficiencies)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/subraces/{index}/traits", wrapper.GetApiSubracesIndexTraits)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/traits/{index}", wrapper.GetApiTraitsIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/weapon-properties/{index}", wrapper.GetApiWeaponPropertiesIndex)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/{endpoint}", wrapper.GetApiEndpoint)
+	})
+
+	return r
 }
 
 type GetApiRequestObject struct {
@@ -2394,1288 +2909,1258 @@ type StrictServerInterface interface {
 	GetApiEndpoint(ctx context.Context, request GetApiEndpointRequestObject) (GetApiEndpointResponseObject, error)
 }
 
-type StrictHandlerFunc = strictgin.StrictGinHandlerFunc
-type StrictMiddlewareFunc = strictgin.StrictGinMiddlewareFunc
+type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
+type StrictMiddlewareFunc = strictnethttp.StrictHTTPMiddlewareFunc
+
+type StrictHTTPServerOptions struct {
+	RequestErrorHandlerFunc  func(w http.ResponseWriter, r *http.Request, err error)
+	ResponseErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
+}
 
 func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
-	return &strictHandler{ssi: ssi, middlewares: middlewares}
+	return &strictHandler{ssi: ssi, middlewares: middlewares, options: StrictHTTPServerOptions{
+		RequestErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		},
+		ResponseErrorHandlerFunc: func(w http.ResponseWriter, r *http.Request, err error) {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		},
+	}}
+}
+
+func NewStrictHandlerWithOptions(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc, options StrictHTTPServerOptions) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares, options: options}
 }
 
 type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
+	options     StrictHTTPServerOptions
 }
 
 // GetApi operation middleware
-func (sh *strictHandler) GetApi(ctx *gin.Context) {
+func (sh *strictHandler) GetApi(w http.ResponseWriter, r *http.Request) {
 	var request GetApiRequestObject
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApi(ctx, request.(GetApiRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApi")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiResponseObject); ok {
-		if err := validResponse.VisitGetApiResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiAbilityScoresIndex operation middleware
-func (sh *strictHandler) GetApiAbilityScoresIndex(ctx *gin.Context, index GetApiAbilityScoresIndexParamsIndex) {
+func (sh *strictHandler) GetApiAbilityScoresIndex(w http.ResponseWriter, r *http.Request, index GetApiAbilityScoresIndexParamsIndex) {
 	var request GetApiAbilityScoresIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiAbilityScoresIndex(ctx, request.(GetApiAbilityScoresIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiAbilityScoresIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiAbilityScoresIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiAbilityScoresIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiAbilityScoresIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiAlignmentsIndex operation middleware
-func (sh *strictHandler) GetApiAlignmentsIndex(ctx *gin.Context, index GetApiAlignmentsIndexParamsIndex) {
+func (sh *strictHandler) GetApiAlignmentsIndex(w http.ResponseWriter, r *http.Request, index GetApiAlignmentsIndexParamsIndex) {
 	var request GetApiAlignmentsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiAlignmentsIndex(ctx, request.(GetApiAlignmentsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiAlignmentsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiAlignmentsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiAlignmentsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiAlignmentsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiBackgroundsIndex operation middleware
-func (sh *strictHandler) GetApiBackgroundsIndex(ctx *gin.Context, index GetApiBackgroundsIndexParamsIndex) {
+func (sh *strictHandler) GetApiBackgroundsIndex(w http.ResponseWriter, r *http.Request, index GetApiBackgroundsIndexParamsIndex) {
 	var request GetApiBackgroundsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiBackgroundsIndex(ctx, request.(GetApiBackgroundsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiBackgroundsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiBackgroundsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiBackgroundsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiBackgroundsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndex operation middleware
-func (sh *strictHandler) GetApiClassesIndex(ctx *gin.Context, index GetApiClassesIndexParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndex(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexParamsIndex) {
 	var request GetApiClassesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndex(ctx, request.(GetApiClassesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexFeatures operation middleware
-func (sh *strictHandler) GetApiClassesIndexFeatures(ctx *gin.Context, index GetApiClassesIndexFeaturesParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndexFeatures(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexFeaturesParamsIndex) {
 	var request GetApiClassesIndexFeaturesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexFeatures(ctx, request.(GetApiClassesIndexFeaturesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexFeatures")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexFeaturesResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexFeaturesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexFeaturesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexLevels operation middleware
-func (sh *strictHandler) GetApiClassesIndexLevels(ctx *gin.Context, index GetApiClassesIndexLevelsParamsIndex, params GetApiClassesIndexLevelsParams) {
+func (sh *strictHandler) GetApiClassesIndexLevels(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsParamsIndex, params GetApiClassesIndexLevelsParams) {
 	var request GetApiClassesIndexLevelsRequestObject
 
 	request.Index = index
 	request.Params = params
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexLevels(ctx, request.(GetApiClassesIndexLevelsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexLevels")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexLevelsResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexLevelsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexLevelsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexLevelsClassLevel operation middleware
-func (sh *strictHandler) GetApiClassesIndexLevelsClassLevel(ctx *gin.Context, index GetApiClassesIndexLevelsClassLevelParamsIndex, classLevelParam ClassLevelParam) {
+func (sh *strictHandler) GetApiClassesIndexLevelsClassLevel(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsClassLevelParamsIndex, classLevelParam ClassLevelParam) {
 	var request GetApiClassesIndexLevelsClassLevelRequestObject
 
 	request.Index = index
 	request.ClassLevelParam = classLevelParam
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexLevelsClassLevel(ctx, request.(GetApiClassesIndexLevelsClassLevelRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexLevelsClassLevel")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexLevelsClassLevelResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexLevelsClassLevelResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexLevelsClassLevelResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexLevelsClassLevelFeatures operation middleware
-func (sh *strictHandler) GetApiClassesIndexLevelsClassLevelFeatures(ctx *gin.Context, index GetApiClassesIndexLevelsClassLevelFeaturesParamsIndex, classLevelParam ClassLevelParam) {
+func (sh *strictHandler) GetApiClassesIndexLevelsClassLevelFeatures(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsClassLevelFeaturesParamsIndex, classLevelParam ClassLevelParam) {
 	var request GetApiClassesIndexLevelsClassLevelFeaturesRequestObject
 
 	request.Index = index
 	request.ClassLevelParam = classLevelParam
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexLevelsClassLevelFeatures(ctx, request.(GetApiClassesIndexLevelsClassLevelFeaturesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexLevelsClassLevelFeatures")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexLevelsClassLevelFeaturesResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexLevelsClassLevelFeaturesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexLevelsClassLevelFeaturesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexLevelsSpellLevelSpells operation middleware
-func (sh *strictHandler) GetApiClassesIndexLevelsSpellLevelSpells(ctx *gin.Context, index GetApiClassesIndexLevelsSpellLevelSpellsParamsIndex, spellLevel SpellLevel) {
+func (sh *strictHandler) GetApiClassesIndexLevelsSpellLevelSpells(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexLevelsSpellLevelSpellsParamsIndex, spellLevel SpellLevel) {
 	var request GetApiClassesIndexLevelsSpellLevelSpellsRequestObject
 
 	request.Index = index
 	request.SpellLevel = spellLevel
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexLevelsSpellLevelSpells(ctx, request.(GetApiClassesIndexLevelsSpellLevelSpellsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexLevelsSpellLevelSpells")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexLevelsSpellLevelSpellsResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexLevelsSpellLevelSpellsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexLevelsSpellLevelSpellsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexMultiClassing operation middleware
-func (sh *strictHandler) GetApiClassesIndexMultiClassing(ctx *gin.Context, index GetApiClassesIndexMultiClassingParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndexMultiClassing(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexMultiClassingParamsIndex) {
 	var request GetApiClassesIndexMultiClassingRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexMultiClassing(ctx, request.(GetApiClassesIndexMultiClassingRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexMultiClassing")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexMultiClassingResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexMultiClassingResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexMultiClassingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexProficiencies operation middleware
-func (sh *strictHandler) GetApiClassesIndexProficiencies(ctx *gin.Context, index GetApiClassesIndexProficienciesParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexProficienciesParamsIndex) {
 	var request GetApiClassesIndexProficienciesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexProficiencies(ctx, request.(GetApiClassesIndexProficienciesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexProficiencies")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexProficienciesResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexProficienciesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexProficienciesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexSpellcasting operation middleware
-func (sh *strictHandler) GetApiClassesIndexSpellcasting(ctx *gin.Context, index GetApiClassesIndexSpellcastingParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndexSpellcasting(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSpellcastingParamsIndex) {
 	var request GetApiClassesIndexSpellcastingRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexSpellcasting(ctx, request.(GetApiClassesIndexSpellcastingRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexSpellcasting")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexSpellcastingResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexSpellcastingResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexSpellcastingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexSpells operation middleware
-func (sh *strictHandler) GetApiClassesIndexSpells(ctx *gin.Context, index GetApiClassesIndexSpellsParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndexSpells(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSpellsParamsIndex) {
 	var request GetApiClassesIndexSpellsRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexSpells(ctx, request.(GetApiClassesIndexSpellsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexSpells")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexSpellsResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexSpellsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexSpellsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiClassesIndexSubclasses operation middleware
-func (sh *strictHandler) GetApiClassesIndexSubclasses(ctx *gin.Context, index GetApiClassesIndexSubclassesParamsIndex) {
+func (sh *strictHandler) GetApiClassesIndexSubclasses(w http.ResponseWriter, r *http.Request, index GetApiClassesIndexSubclassesParamsIndex) {
 	var request GetApiClassesIndexSubclassesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiClassesIndexSubclasses(ctx, request.(GetApiClassesIndexSubclassesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiClassesIndexSubclasses")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiClassesIndexSubclassesResponseObject); ok {
-		if err := validResponse.VisitGetApiClassesIndexSubclassesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiClassesIndexSubclassesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiConditionsIndex operation middleware
-func (sh *strictHandler) GetApiConditionsIndex(ctx *gin.Context, index GetApiConditionsIndexParamsIndex) {
+func (sh *strictHandler) GetApiConditionsIndex(w http.ResponseWriter, r *http.Request, index GetApiConditionsIndexParamsIndex) {
 	var request GetApiConditionsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiConditionsIndex(ctx, request.(GetApiConditionsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiConditionsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiConditionsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiConditionsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiConditionsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiDamageTypesIndex operation middleware
-func (sh *strictHandler) GetApiDamageTypesIndex(ctx *gin.Context, index GetApiDamageTypesIndexParamsIndex) {
+func (sh *strictHandler) GetApiDamageTypesIndex(w http.ResponseWriter, r *http.Request, index GetApiDamageTypesIndexParamsIndex) {
 	var request GetApiDamageTypesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiDamageTypesIndex(ctx, request.(GetApiDamageTypesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiDamageTypesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiDamageTypesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiDamageTypesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiDamageTypesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiEquipmentCategoriesIndex operation middleware
-func (sh *strictHandler) GetApiEquipmentCategoriesIndex(ctx *gin.Context, index string) {
+func (sh *strictHandler) GetApiEquipmentCategoriesIndex(w http.ResponseWriter, r *http.Request, index string) {
 	var request GetApiEquipmentCategoriesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiEquipmentCategoriesIndex(ctx, request.(GetApiEquipmentCategoriesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiEquipmentCategoriesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiEquipmentCategoriesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiEquipmentCategoriesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiEquipmentCategoriesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiEquipmentIndex operation middleware
-func (sh *strictHandler) GetApiEquipmentIndex(ctx *gin.Context, index EquipmentIndex) {
+func (sh *strictHandler) GetApiEquipmentIndex(w http.ResponseWriter, r *http.Request, index EquipmentIndex) {
 	var request GetApiEquipmentIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiEquipmentIndex(ctx, request.(GetApiEquipmentIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiEquipmentIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiEquipmentIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiEquipmentIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiEquipmentIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiFeatsIndex operation middleware
-func (sh *strictHandler) GetApiFeatsIndex(ctx *gin.Context, index GetApiFeatsIndexParamsIndex) {
+func (sh *strictHandler) GetApiFeatsIndex(w http.ResponseWriter, r *http.Request, index GetApiFeatsIndexParamsIndex) {
 	var request GetApiFeatsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiFeatsIndex(ctx, request.(GetApiFeatsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiFeatsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiFeatsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiFeatsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiFeatsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiFeaturesIndex operation middleware
-func (sh *strictHandler) GetApiFeaturesIndex(ctx *gin.Context, index FeatureIndex) {
+func (sh *strictHandler) GetApiFeaturesIndex(w http.ResponseWriter, r *http.Request, index FeatureIndex) {
 	var request GetApiFeaturesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiFeaturesIndex(ctx, request.(GetApiFeaturesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiFeaturesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiFeaturesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiFeaturesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiFeaturesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiLanguagesIndex operation middleware
-func (sh *strictHandler) GetApiLanguagesIndex(ctx *gin.Context, index GetApiLanguagesIndexParamsIndex) {
+func (sh *strictHandler) GetApiLanguagesIndex(w http.ResponseWriter, r *http.Request, index GetApiLanguagesIndexParamsIndex) {
 	var request GetApiLanguagesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiLanguagesIndex(ctx, request.(GetApiLanguagesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiLanguagesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiLanguagesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiLanguagesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiLanguagesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiMagicItemsIndex operation middleware
-func (sh *strictHandler) GetApiMagicItemsIndex(ctx *gin.Context, index string) {
+func (sh *strictHandler) GetApiMagicItemsIndex(w http.ResponseWriter, r *http.Request, index string) {
 	var request GetApiMagicItemsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiMagicItemsIndex(ctx, request.(GetApiMagicItemsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiMagicItemsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiMagicItemsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiMagicItemsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiMagicItemsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiMagicSchoolsIndex operation middleware
-func (sh *strictHandler) GetApiMagicSchoolsIndex(ctx *gin.Context, index GetApiMagicSchoolsIndexParamsIndex) {
+func (sh *strictHandler) GetApiMagicSchoolsIndex(w http.ResponseWriter, r *http.Request, index GetApiMagicSchoolsIndexParamsIndex) {
 	var request GetApiMagicSchoolsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiMagicSchoolsIndex(ctx, request.(GetApiMagicSchoolsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiMagicSchoolsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiMagicSchoolsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiMagicSchoolsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiMagicSchoolsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiMonsters operation middleware
-func (sh *strictHandler) GetApiMonsters(ctx *gin.Context, params GetApiMonstersParams) {
+func (sh *strictHandler) GetApiMonsters(w http.ResponseWriter, r *http.Request, params GetApiMonstersParams) {
 	var request GetApiMonstersRequestObject
 
 	request.Params = params
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiMonsters(ctx, request.(GetApiMonstersRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiMonsters")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiMonstersResponseObject); ok {
-		if err := validResponse.VisitGetApiMonstersResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiMonstersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiMonstersIndex operation middleware
-func (sh *strictHandler) GetApiMonstersIndex(ctx *gin.Context, index MonsterIndex) {
+func (sh *strictHandler) GetApiMonstersIndex(w http.ResponseWriter, r *http.Request, index MonsterIndex) {
 	var request GetApiMonstersIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiMonstersIndex(ctx, request.(GetApiMonstersIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiMonstersIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiMonstersIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiMonstersIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiMonstersIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiProficienciesIndex operation middleware
-func (sh *strictHandler) GetApiProficienciesIndex(ctx *gin.Context, index ProficiencyIndex) {
+func (sh *strictHandler) GetApiProficienciesIndex(w http.ResponseWriter, r *http.Request, index ProficiencyIndex) {
 	var request GetApiProficienciesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiProficienciesIndex(ctx, request.(GetApiProficienciesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiProficienciesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiProficienciesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiProficienciesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiProficienciesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiRacesIndex operation middleware
-func (sh *strictHandler) GetApiRacesIndex(ctx *gin.Context, index GetApiRacesIndexParamsIndex) {
+func (sh *strictHandler) GetApiRacesIndex(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexParamsIndex) {
 	var request GetApiRacesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiRacesIndex(ctx, request.(GetApiRacesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiRacesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiRacesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiRacesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiRacesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiRacesIndexProficiencies operation middleware
-func (sh *strictHandler) GetApiRacesIndexProficiencies(ctx *gin.Context, index GetApiRacesIndexProficienciesParamsIndex) {
+func (sh *strictHandler) GetApiRacesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexProficienciesParamsIndex) {
 	var request GetApiRacesIndexProficienciesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiRacesIndexProficiencies(ctx, request.(GetApiRacesIndexProficienciesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiRacesIndexProficiencies")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiRacesIndexProficienciesResponseObject); ok {
-		if err := validResponse.VisitGetApiRacesIndexProficienciesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiRacesIndexProficienciesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiRacesIndexSubraces operation middleware
-func (sh *strictHandler) GetApiRacesIndexSubraces(ctx *gin.Context, index GetApiRacesIndexSubracesParamsIndex) {
+func (sh *strictHandler) GetApiRacesIndexSubraces(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexSubracesParamsIndex) {
 	var request GetApiRacesIndexSubracesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiRacesIndexSubraces(ctx, request.(GetApiRacesIndexSubracesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiRacesIndexSubraces")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiRacesIndexSubracesResponseObject); ok {
-		if err := validResponse.VisitGetApiRacesIndexSubracesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiRacesIndexSubracesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiRacesIndexTraits operation middleware
-func (sh *strictHandler) GetApiRacesIndexTraits(ctx *gin.Context, index GetApiRacesIndexTraitsParamsIndex) {
+func (sh *strictHandler) GetApiRacesIndexTraits(w http.ResponseWriter, r *http.Request, index GetApiRacesIndexTraitsParamsIndex) {
 	var request GetApiRacesIndexTraitsRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiRacesIndexTraits(ctx, request.(GetApiRacesIndexTraitsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiRacesIndexTraits")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiRacesIndexTraitsResponseObject); ok {
-		if err := validResponse.VisitGetApiRacesIndexTraitsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiRacesIndexTraitsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiRuleSectionsIndex operation middleware
-func (sh *strictHandler) GetApiRuleSectionsIndex(ctx *gin.Context, index GetApiRuleSectionsIndexParamsIndex) {
+func (sh *strictHandler) GetApiRuleSectionsIndex(w http.ResponseWriter, r *http.Request, index GetApiRuleSectionsIndexParamsIndex) {
 	var request GetApiRuleSectionsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiRuleSectionsIndex(ctx, request.(GetApiRuleSectionsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiRuleSectionsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiRuleSectionsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiRuleSectionsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiRuleSectionsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiRulesIndex operation middleware
-func (sh *strictHandler) GetApiRulesIndex(ctx *gin.Context, index GetApiRulesIndexParamsIndex) {
+func (sh *strictHandler) GetApiRulesIndex(w http.ResponseWriter, r *http.Request, index GetApiRulesIndexParamsIndex) {
 	var request GetApiRulesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiRulesIndex(ctx, request.(GetApiRulesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiRulesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiRulesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiRulesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiRulesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSkillsIndex operation middleware
-func (sh *strictHandler) GetApiSkillsIndex(ctx *gin.Context, index GetApiSkillsIndexParamsIndex) {
+func (sh *strictHandler) GetApiSkillsIndex(w http.ResponseWriter, r *http.Request, index GetApiSkillsIndexParamsIndex) {
 	var request GetApiSkillsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSkillsIndex(ctx, request.(GetApiSkillsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSkillsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSkillsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiSkillsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSkillsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSpells operation middleware
-func (sh *strictHandler) GetApiSpells(ctx *gin.Context, params GetApiSpellsParams) {
+func (sh *strictHandler) GetApiSpells(w http.ResponseWriter, r *http.Request, params GetApiSpellsParams) {
 	var request GetApiSpellsRequestObject
 
 	request.Params = params
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSpells(ctx, request.(GetApiSpellsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSpells")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSpellsResponseObject); ok {
-		if err := validResponse.VisitGetApiSpellsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSpellsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSpellsIndex operation middleware
-func (sh *strictHandler) GetApiSpellsIndex(ctx *gin.Context, index SpellIndex) {
+func (sh *strictHandler) GetApiSpellsIndex(w http.ResponseWriter, r *http.Request, index SpellIndex) {
 	var request GetApiSpellsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSpellsIndex(ctx, request.(GetApiSpellsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSpellsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSpellsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiSpellsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSpellsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubclassesIndex operation middleware
-func (sh *strictHandler) GetApiSubclassesIndex(ctx *gin.Context, index GetApiSubclassesIndexParamsIndex) {
+func (sh *strictHandler) GetApiSubclassesIndex(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexParamsIndex) {
 	var request GetApiSubclassesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubclassesIndex(ctx, request.(GetApiSubclassesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubclassesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubclassesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiSubclassesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubclassesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubclassesIndexFeatures operation middleware
-func (sh *strictHandler) GetApiSubclassesIndexFeatures(ctx *gin.Context, index GetApiSubclassesIndexFeaturesParamsIndex) {
+func (sh *strictHandler) GetApiSubclassesIndexFeatures(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexFeaturesParamsIndex) {
 	var request GetApiSubclassesIndexFeaturesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubclassesIndexFeatures(ctx, request.(GetApiSubclassesIndexFeaturesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubclassesIndexFeatures")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubclassesIndexFeaturesResponseObject); ok {
-		if err := validResponse.VisitGetApiSubclassesIndexFeaturesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubclassesIndexFeaturesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubclassesIndexLevels operation middleware
-func (sh *strictHandler) GetApiSubclassesIndexLevels(ctx *gin.Context, index GetApiSubclassesIndexLevelsParamsIndex) {
+func (sh *strictHandler) GetApiSubclassesIndexLevels(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsParamsIndex) {
 	var request GetApiSubclassesIndexLevelsRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubclassesIndexLevels(ctx, request.(GetApiSubclassesIndexLevelsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubclassesIndexLevels")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubclassesIndexLevelsResponseObject); ok {
-		if err := validResponse.VisitGetApiSubclassesIndexLevelsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubclassesIndexLevelsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubclassesIndexLevelsSubclassLevel operation middleware
-func (sh *strictHandler) GetApiSubclassesIndexLevelsSubclassLevel(ctx *gin.Context, index GetApiSubclassesIndexLevelsSubclassLevelParamsIndex, subclassLevel int) {
+func (sh *strictHandler) GetApiSubclassesIndexLevelsSubclassLevel(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsSubclassLevelParamsIndex, subclassLevel int) {
 	var request GetApiSubclassesIndexLevelsSubclassLevelRequestObject
 
 	request.Index = index
 	request.SubclassLevel = subclassLevel
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubclassesIndexLevelsSubclassLevel(ctx, request.(GetApiSubclassesIndexLevelsSubclassLevelRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubclassesIndexLevelsSubclassLevel")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubclassesIndexLevelsSubclassLevelResponseObject); ok {
-		if err := validResponse.VisitGetApiSubclassesIndexLevelsSubclassLevelResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubclassesIndexLevelsSubclassLevelResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubclassesIndexLevelsSubclassLevelFeatures operation middleware
-func (sh *strictHandler) GetApiSubclassesIndexLevelsSubclassLevelFeatures(ctx *gin.Context, index GetApiSubclassesIndexLevelsSubclassLevelFeaturesParamsIndex, subclassLevel int) {
+func (sh *strictHandler) GetApiSubclassesIndexLevelsSubclassLevelFeatures(w http.ResponseWriter, r *http.Request, index GetApiSubclassesIndexLevelsSubclassLevelFeaturesParamsIndex, subclassLevel int) {
 	var request GetApiSubclassesIndexLevelsSubclassLevelFeaturesRequestObject
 
 	request.Index = index
 	request.SubclassLevel = subclassLevel
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubclassesIndexLevelsSubclassLevelFeatures(ctx, request.(GetApiSubclassesIndexLevelsSubclassLevelFeaturesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubclassesIndexLevelsSubclassLevelFeatures")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubclassesIndexLevelsSubclassLevelFeaturesResponseObject); ok {
-		if err := validResponse.VisitGetApiSubclassesIndexLevelsSubclassLevelFeaturesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubclassesIndexLevelsSubclassLevelFeaturesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubracesIndex operation middleware
-func (sh *strictHandler) GetApiSubracesIndex(ctx *gin.Context, index GetApiSubracesIndexParamsIndex) {
+func (sh *strictHandler) GetApiSubracesIndex(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexParamsIndex) {
 	var request GetApiSubracesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubracesIndex(ctx, request.(GetApiSubracesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubracesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubracesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiSubracesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubracesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubracesIndexProficiencies operation middleware
-func (sh *strictHandler) GetApiSubracesIndexProficiencies(ctx *gin.Context, index GetApiSubracesIndexProficienciesParamsIndex) {
+func (sh *strictHandler) GetApiSubracesIndexProficiencies(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexProficienciesParamsIndex) {
 	var request GetApiSubracesIndexProficienciesRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubracesIndexProficiencies(ctx, request.(GetApiSubracesIndexProficienciesRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubracesIndexProficiencies")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubracesIndexProficienciesResponseObject); ok {
-		if err := validResponse.VisitGetApiSubracesIndexProficienciesResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubracesIndexProficienciesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiSubracesIndexTraits operation middleware
-func (sh *strictHandler) GetApiSubracesIndexTraits(ctx *gin.Context, index GetApiSubracesIndexTraitsParamsIndex) {
+func (sh *strictHandler) GetApiSubracesIndexTraits(w http.ResponseWriter, r *http.Request, index GetApiSubracesIndexTraitsParamsIndex) {
 	var request GetApiSubracesIndexTraitsRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiSubracesIndexTraits(ctx, request.(GetApiSubracesIndexTraitsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiSubracesIndexTraits")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiSubracesIndexTraitsResponseObject); ok {
-		if err := validResponse.VisitGetApiSubracesIndexTraitsResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiSubracesIndexTraitsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiTraitsIndex operation middleware
-func (sh *strictHandler) GetApiTraitsIndex(ctx *gin.Context, index GetApiTraitsIndexParamsIndex) {
+func (sh *strictHandler) GetApiTraitsIndex(w http.ResponseWriter, r *http.Request, index GetApiTraitsIndexParamsIndex) {
 	var request GetApiTraitsIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiTraitsIndex(ctx, request.(GetApiTraitsIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiTraitsIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiTraitsIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiTraitsIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiTraitsIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiWeaponPropertiesIndex operation middleware
-func (sh *strictHandler) GetApiWeaponPropertiesIndex(ctx *gin.Context, index GetApiWeaponPropertiesIndexParamsIndex) {
+func (sh *strictHandler) GetApiWeaponPropertiesIndex(w http.ResponseWriter, r *http.Request, index GetApiWeaponPropertiesIndexParamsIndex) {
 	var request GetApiWeaponPropertiesIndexRequestObject
 
 	request.Index = index
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiWeaponPropertiesIndex(ctx, request.(GetApiWeaponPropertiesIndexRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiWeaponPropertiesIndex")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiWeaponPropertiesIndexResponseObject); ok {
-		if err := validResponse.VisitGetApiWeaponPropertiesIndexResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiWeaponPropertiesIndexResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
 // GetApiEndpoint operation middleware
-func (sh *strictHandler) GetApiEndpoint(ctx *gin.Context, endpoint GetApiEndpointParamsEndpoint) {
+func (sh *strictHandler) GetApiEndpoint(w http.ResponseWriter, r *http.Request, endpoint GetApiEndpointParamsEndpoint) {
 	var request GetApiEndpointRequestObject
 
 	request.Endpoint = endpoint
 
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
 		return sh.ssi.GetApiEndpoint(ctx, request.(GetApiEndpointRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
 		handler = middleware(handler, "GetApiEndpoint")
 	}
 
-	response, err := handler(ctx, request)
+	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetApiEndpointResponseObject); ok {
-		if err := validResponse.VisitGetApiEndpointResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
+		if err := validResponse.VisitGetApiEndpointResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
 	}
 }
 
