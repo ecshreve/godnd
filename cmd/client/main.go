@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	// Depends on a running api server at http://localhost:3000
-	cl, err := client.NewClientWithResponses("http://localhost:3000")
+	// Depends on a running api server at http://localhost:3003
+	cl, err := client.NewClientWithResponses("http://localhost:3003")
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := cl.GetAPIAbilityScoresIndexWithResponse(context.Background(), client.GetAPIAbilityScoresIndexParamsIndex(""))
+	res, err := cl.GetAPIEndpointWithResponse(context.Background(), client.GetAPIEndpointParamsEndpoint("ability-scores"))
 	if err != nil {
 		panic(err)
 	}
