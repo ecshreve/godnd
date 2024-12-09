@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	client "github.com/ecshreve/godnd/internal/client/generated"
+	client "github.com/ecshreve/godnd/internal/api"
+	"github.com/ecshreve/godnd/internal/api/models"
 	"github.com/kr/pretty"
 )
 
@@ -15,7 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	res, err := cl.GetAPIEndpointWithResponse(context.Background(), client.GetAPIEndpointParamsEndpoint("ability-scores"))
+	res, err := cl.GetApiEndpointWithResponse(context.Background(), models.GetApiEndpointParamsEndpoint("ability-scores"))
 	if err != nil {
 		panic(err)
 	}

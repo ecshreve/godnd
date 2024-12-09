@@ -1,0 +1,25 @@
+{
+    "commit-message": {
+        "description": "Commit message for current changes",
+        "prompt": "Suggest an informative commit message by summarizing code changes from the shared command output. The commit message should follow the conventional commit format and provide meaningful context for future readers. Remember: the subject line should be no more than 50 characters and the body should be no more than 72 characters per line. The commit message should be in the present tense, active voice, and describe what the code does, not just identify changes.",
+        "context": {
+            "selection": false,
+            "command": "git diff --cached"
+        }
+    },
+    "improve-variable-names": {
+        "prompt": "Suppose that you are writing code for a production level application which is shared by many developers in your team. Take the current code, and update the variable names so that it should improve the readability of the code and help the other developers maintain it without much difficulty.",
+        "context": { 
+            "codebase": false, 
+            "selection": true 
+        }
+    },
+    "compare-tabs": {
+        "description": "Compare files in opened tabs",
+        "prompt": "Examine the shared code snippets from my opened tabs. Then explain the relationship between the code samples by answering these questions: 1. What are the main tasks or functions the code is performing? 2. Are there any similarities in functions or logic across the samples? 3. Does one code snippet call or import another? If so, how do they interact? 4. Are there any notable differences in how they approach similar problems? 5. Overall, how are the code snippets related - do they work together as part of a larger program, solve variants of the same problem, or serve entirely different purposes?",
+        "context": {
+          "openTabs": true,
+          "selection": false
+        }
+      }
+}

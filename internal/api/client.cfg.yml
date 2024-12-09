@@ -1,0 +1,7 @@
+package: api
+output: client.gen.go
+additional-imports:
+  - package: "github.com/ecshreve/godnd/internal/api/models"
+    alias: .
+generate:
+  client: true
